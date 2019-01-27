@@ -17,7 +17,7 @@ class AppRouter extends React.Component {
 
     return (
       <Router>
-        <div>
+        <>
           <nav>
             <ul>
               <li>
@@ -39,7 +39,7 @@ class AppRouter extends React.Component {
             path="/signin/"
             render={() => (isSignin ? <Redirect to="/" /> : <Signin />)}
           />
-        </div>
+        </>
       </Router>
     );
   }

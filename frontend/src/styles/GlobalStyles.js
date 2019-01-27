@@ -5,6 +5,12 @@ const GlobalStyles = createGlobalStyle`
     padding: 0;
     margin: 0;
     height: 100%;
+    display: flex;
+    flex-flow: column wrap;
+  }
+  input, button {
+    outline: none;
+    border: none;
   }
 `;
 
