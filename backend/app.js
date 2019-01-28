@@ -6,6 +6,9 @@ var mongoose = require("mongoose");
 var morgan = require("morgan");
 var jwt = require("jsonwebtoken");
 var session = require("express-session");
+require("dotenv").config();
+
+console.log(process.env.KEY);
 
 app.use(
   session({
