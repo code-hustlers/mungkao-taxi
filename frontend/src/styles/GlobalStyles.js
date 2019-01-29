@@ -12,6 +12,11 @@ const GlobalStyles = createGlobalStyle`
     outline: none;
     border: none;
   }
+  button {
+    &:hover, &:active {
+      cursor: pointer;
+    }
+  }
 `;
 
 export default GlobalStyles;
