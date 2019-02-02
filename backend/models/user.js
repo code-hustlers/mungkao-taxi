@@ -3,11 +3,11 @@ var bcrypts = require('bcryptjs');
 var Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-    id: String,
+    id: {type: String, unique: true, lowercase: true},
     pw: String,
     name: String,
-    position: String,
-    status: String,
+    position: Number,
+    status: Number,
     create_date: { type: Date, default: Date.now() }
 });
 
