@@ -21,7 +21,11 @@ class Signin extends React.Component {
           pw
         }
       )
-      .then(res => console.log(res));
+      .then(res => {
+        console.log(res);
+        alert("success");
+      })
+      .catch(err => console.error(err));
   };
 
   handleChange = name => event => {

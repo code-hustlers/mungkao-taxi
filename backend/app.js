@@ -8,8 +8,6 @@ var jwt = require("jsonwebtoken");
 var session = require("express-session");
 require("dotenv").config();
 
-console.log(process.env.KEY);
-
 app.use(
   session({
     secret: "MuNgkaOSessIOn",
@@ -25,6 +23,7 @@ app.set("jwt-secret", "MuNgkaO");
 
 var port = process.env.PORT || 8081;
 
+// CORS
 app.all("/*", function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Methods", "POST,GET,OPTIONS,PUT,DELETE");
@@ -32,17 +31,37 @@ app.all("/*", function(req, res, next) {
   next();
 });
 
+const { DB_ID, DB_PW, DB_NAME, DB_URL } = process.env;
+console.log(
+  "TCL: DB_ID, DB_PW, DB_NAME, DB_URL",
+  DB_ID,
+  DB_PW,
+  DB_NAME,
+  DB_URL
+);
+
 // 몽고디비 연결
+// Mongo Driver
+// const MongoClient = require("mongodb").MongoClient;
+// const uri = `mongodb+srv://${DB_ID}:${DB_PW}@${DB_URL}/${DB_NAME}?retryWrites=true/`;
+// const client = new MongoClient(uri, { useNewUrlParser: true });
+// client.connect(err => {
+//   const collection = client.db(`${DB_NAME}`).collection("users");
+
+//   console.log(collection);
+//   // perform actions on the collection object
+//   client.close();
+// });
+
 var db = mongoose.connection;
 db.on("error", console.error);
 db.once("open", () => {
   console.log("Connected mongod server");
 });
 
-mongoose.connect(
-  "mongodb://localhost/mungkao",
-  { useNewUrlParser: true }
-);
+mongoose.connect(`mongodb+srv://${DB_ID}:${DB_PW}@${DB_URL}/${DB_NAME}`, {
+  useNewUrlParser: true
+});
 
 // model import
 var User = require("./models/user");
