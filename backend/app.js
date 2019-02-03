@@ -61,6 +61,11 @@ db.once("open", () => {
 
 mongoose.connect(`mongodb+srv://${DB_ID}:${DB_PW}@${DB_URL}/${DB_NAME}`, {
   useNewUrlParser: true
+}, function(err) {
+  if(err) throw err;
+  mongoose.connect(`mongodb://${DB_ID}:${DB_PW}@${DB_URL}`, {
+    useNewUrlParser: true
+  });
 });
 
 // model import
