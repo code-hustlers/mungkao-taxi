@@ -59,7 +59,7 @@ db.once("open", () => {
   console.log("Connected mongod server");
 });
 
-mongoose.connect(`mongodb+srv://${DB_ID}:${DB_PW}@${DB_URL}`, {
+mongoose.connect(`mongodb+srv://${DB_ID}:${DB_PW}@${DB_URL}/${DB_NAME}`, {
   useNewUrlParser: true
 }).then((data) => {
   const state = data.connection._hasOpened;
