@@ -1,6 +1,7 @@
 import React from "react";
 import { Container, CardForm, Input, Button } from "./Signin.styles";
 import axios from "axios";
+import { withCookies } from "react-cookie";
 
 class Signin extends React.Component {
   state = {
@@ -8,10 +9,14 @@ class Signin extends React.Component {
     pw: ""
   };
 
-  handleSignin = event => {
+  handleSignin = async event => {
     const { id, pw } = this.state;
+    const { cookies } = this.props;
     event.preventDefault();
-    axios
+
+    const {
+      data: { success, token }
+    } = await axios
       .post(
         `${process.env.REACT_APP_SERVER_URL}:${
           process.env.REACT_APP_SERVER_PORT
@@ -21,11 +26,13 @@ class Signin extends React.Component {
           pw
         }
       )
-      .then(res => {
-        console.log(res);
-        alert("success");
-      })
+      .then(res => res)
       .catch(err => console.error(err));
+
+    console.log("TCL: Signin -> success, token", success, token);
+
+    cookies.set("token", token, { path: "/" });
+    alert("Login Success!");
   };
 
   handleChange = name => event => {
@@ -35,8 +42,6 @@ class Signin extends React.Component {
   render() {
     const { handleSignin, handleChange } = this;
     const { id, pw } = this.state;
-    console.log("TCL: Signin -> render -> id, pw", id, pw);
-
     return (
       <Container>
         <CardForm onSubmit={handleSignin}>
@@ -59,4 +64,4 @@ class Signin extends React.Component {
   }
 }
 
-export default Signin;
+export default withCookies(Signin);
