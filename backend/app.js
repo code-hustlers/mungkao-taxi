@@ -59,14 +59,16 @@ db.once("open", () => {
   console.log("Connected mongod server");
 });
 
-mongoose.connect(`mongodb+srv://${DB_ID}:${DB_PW}@${DB_URL}/${DB_NAME}`, {
+mongoose.connect(`mongodb+srv://${DB_ID}:${DB_PW}@${DB_URL}`, {
   useNewUrlParser: true
-}, function(err) {
-  if(err) throw err;
-  mongoose.connect(`mongodb://${DB_ID}:${DB_PW}@${DB_URL}`, {
-    useNewUrlParser: true
-  });
-});
+}).then((data) => {
+  const state = data.connection._hasOpened;
+  if(!state) {
+    mongoose.connect(`mongodb://${DB_ID}:${DB_PW}@${DB_URL}`, {
+      useNewUrlParser: true
+    });
+  }
+}, err => {console.log(err)});
 
 // model import
 var User = require("./models/user");
