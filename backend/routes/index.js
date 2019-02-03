@@ -1,15 +1,16 @@
+const DEFAULT_API = '/apis/v1';
 module.exports = (app, jwt, User) => {
     
     // API LIST
 
     // User check
-    app.post('/apis/v1/auth/check', (req, res) => {
-        console.log(`API: /apis/v1/auth/check =============== ${req} :::::`);
+    app.post(`${DEFAULT_API}/auth/check`, (req, res) => {
+        console.log(`API: ${DEFAULT_API}/auth/check =============== ${req} :::::`);
     });
 
     // Sign up
-    app.post('/apis/v1/signup', (req, res) => {
-        console.log(`API: /apis/v1/signup =============== ${req.body} :::::`);
+    app.post(`${DEFAULT_API}/signup`, (req, res) => {
+        console.log(`API: ${DEFAULT_API}/signup =============== ${req.body} :::::`);
 
         const user = new User({
             id: req.body.id,
@@ -40,7 +41,7 @@ module.exports = (app, jwt, User) => {
     });
 
     // Login
-    app.post('/apis/v1/login', (req, res) => {
+    app.post(`${DEFAULT_API}/login`, (req, res) => {
         const secret = req.app.get('jwt-secret');
         console.log('REQ : ', req.body);
 
@@ -89,4 +90,7 @@ module.exports = (app, jwt, User) => {
             return t;
         });
     });
+
+    // Log out
+    
 }
