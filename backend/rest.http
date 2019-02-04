@@ -1,0 +1,15 @@
+POST http://localhost:8081/login HTTP/1.1
+content-type: application/json
+
+{
+    "id": "",
+    "pw": ""
+}
+###
+POST http://localhost:8081/signup HTTP/1.1
+content-type: application/json
+
+{
+    "id": "",
+    "pw": ""
+}
