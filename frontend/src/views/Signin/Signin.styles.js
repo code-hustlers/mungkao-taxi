@@ -46,10 +46,17 @@ export const Button = styled.button`
   padding: 1rem;
   border-radius: 1rem;
   background: ${({
+    variant,
     theme: {
       color: { secondary }
     }
   }) => secondary};
-  color: #fff;
+  color: ${({
+    variant,
+    theme: {
+      color: { primary }
+    }
+  }) => (variant === "primary" ? primary : "#fff")};
+
   font-size: 1rem;
 `;

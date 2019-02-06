@@ -103,12 +103,14 @@ module.exports = (app, jwt, User) => {
       });
     }
 
-    await jwt.verify(token, req.app.get("jwt-secret"), (err, decoded) => {
-      if (err) reject(err);
-
-      console.log("TCL: decoded", decoded);
-      res.json(decoded);
-    });
+    try {
+      await jwt.verify(token, req.app.get("jwt-secret"), (err, decoded) => {
+        console.log("TCL: decoded", decoded);
+        res.json(decoded);
+      });
+    } catch (error) {
+      console.error(error);
+    }
   });
 
   // Log out

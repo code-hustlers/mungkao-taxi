@@ -35,12 +35,16 @@ class Signin extends React.Component {
     alert("Login Success!");
   };
 
+  handleSignup = () => {
+    console.log("handleSignup");
+  };
+
   handleChange = name => event => {
     this.setState({ [name]: event.target.value });
   };
 
   render() {
-    const { handleSignin, handleChange } = this;
+    const { handleSignin, handleSignup, handleChange } = this;
     const { id, pw } = this.state;
     return (
       <Container>
@@ -57,7 +61,10 @@ class Signin extends React.Component {
             placeholder="Password"
             type="password"
           />
-          <Button>Signin</Button>
+          <Button onClick={handleSignin}>Signin</Button>
+          <Button type="button" variant={"primary"} onClick={handleSignup}>
+            Signup
+          </Button>
         </CardForm>
       </Container>
     );
