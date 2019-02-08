@@ -5,6 +5,7 @@ import { ThemeProvider } from "styled-components";
 import DefaultTheme from "./styles/theme/DefaultTheme";
 import firebase from "firebase";
 import { CookiesProvider } from "react-cookie";
+import StoreProvider from "./store/Store";
 
 const config = {
   apiKey: process.env.REACT_APP_apiKey,
@@ -45,14 +46,16 @@ messaging
 class App extends Component {
   render() {
     return (
-      <CookiesProvider>
-        <ThemeProvider theme={DefaultTheme}>
-          <>
-            <AppRouter />
-            <GlobalStyles />
-          </>
-        </ThemeProvider>
-      </CookiesProvider>
+      <StoreProvider>
+        <CookiesProvider>
+          <ThemeProvider theme={DefaultTheme}>
+            <>
+              <AppRouter />
+              <GlobalStyles />
+            </>
+          </ThemeProvider>
+        </CookiesProvider>
+      </StoreProvider>
     );
   }
 }

@@ -2,6 +2,8 @@ import React from "react";
 import { Container, CardForm, Input, Button } from "./Signin.styles";
 import axios from "axios";
 import { withCookies } from "react-cookie";
+import { withRouter } from "react-router-dom";
+import { StoreConsumer } from "../../store/Store";
 
 class Signin extends React.Component {
   state = {
@@ -11,7 +13,10 @@ class Signin extends React.Component {
 
   handleSignin = async event => {
     const { id, pw } = this.state;
-    const { cookies } = this.props;
+    const {
+      cookies,
+      history: { push }
+    } = this.props;
     event.preventDefault();
 
     const {
@@ -33,6 +38,7 @@ class Signin extends React.Component {
 
     cookies.set("token", token, { path: "/" });
     alert("Login Success!");
+    push("/");
   };
 
   handleSignup = () => {
@@ -46,29 +52,45 @@ class Signin extends React.Component {
   render() {
     const { handleSignin, handleSignup, handleChange } = this;
     const { id, pw } = this.state;
+
     return (
-      <Container>
-        <CardForm onSubmit={handleSignin}>
-          <h1>Signin</h1>
-          <Input
-            value={id}
-            onChange={handleChange("id")}
-            placeholder="Username"
-          />
-          <Input
-            value={pw}
-            onChange={handleChange("pw")}
-            placeholder="Password"
-            type="password"
-          />
-          <Button onClick={handleSignin}>Signin</Button>
-          <Button type="button" variant={"primary"} onClick={handleSignup}>
-            Signup
-          </Button>
-        </CardForm>
-      </Container>
+      <StoreConsumer>
+        {({ state: { isSignin }, actions: { setSignin } }) => {
+          return (
+            <Container>
+              <CardForm
+                onSubmit={() => {
+                  handleSignin();
+                  setSignin(true);
+                }}
+              >
+                <h1>Signin</h1>
+                <Input
+                  value={id}
+                  onChange={handleChange("id")}
+                  placeholder="Username"
+                />
+                <Input
+                  value={pw}
+                  onChange={handleChange("pw")}
+                  placeholder="Password"
+                  type="password"
+                />
+                <Button onClick={handleSignin}>Signin</Button>
+                <Button
+                  type="button"
+                  variant={"primary"}
+                  onClick={handleSignup}
+                >
+                  Signup
+                </Button>
+              </CardForm>
+            </Container>
+          );
+        }}
+      </StoreConsumer>
     );
   }
 }
 
-export default withCookies(Signin);
+export default withCookies(withRouter(Signin));

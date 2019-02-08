@@ -29,7 +29,6 @@ class AppRouter extends React.Component {
             </ul>
           </nav>
 
-          <Route path="/home" component={Home} />
           <Route
             exact
             path="/"
