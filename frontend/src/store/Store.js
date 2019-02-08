@@ -6,6 +6,7 @@ export default class StoreProvider extends React.Component {
   state = { isSignin: false };
   actions = {
     setSignin: isSignin => {
+      console.log("TCL: StoreProvider -> isSignin", isSignin);
       this.setState({ isSignin });
     }
   };

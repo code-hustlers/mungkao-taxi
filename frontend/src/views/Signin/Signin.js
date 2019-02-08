@@ -60,8 +60,9 @@ class Signin extends React.Component {
             <Container>
               <CardForm
                 onSubmit={() => {
-                  handleSignin();
+                  console.log(1111);
                   setSignin(true);
+                  handleSignin();
                 }}
               >
                 <h1>Signin</h1>
