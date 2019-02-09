@@ -16,16 +16,16 @@ class App extends Component {
 
   render() {
     return (
-      <StoreProvider>
-        <CookiesProvider>
+      <CookiesProvider>
+        <StoreProvider>
           <ThemeProvider theme={DefaultTheme}>
             <>
               <AppRouter />
               <GlobalStyles />
             </>
           </ThemeProvider>
-        </CookiesProvider>
-      </StoreProvider>
+        </StoreProvider>
+      </CookiesProvider>
     );
   }
 }

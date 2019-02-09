@@ -12,20 +12,6 @@ import { withCookies } from "react-cookie";
 import withStore from "../lib/withStore";
 
 class AppRouter extends React.Component {
-
-  constructor(props) {
-    super(props);
-
-    const {
-      cookies,
-      store: {
-        actions: { setSignin }
-      }
-    } = props;
-
-    if(cookies.get('token')) setSignin(true);
-  }
-
   handleSignout = () => {
     const {
       cookies,
