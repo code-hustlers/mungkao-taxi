@@ -26,10 +26,10 @@ class AppRouter extends React.Component {
 
   render() {
     const { handleSignout } = this;
+
     return (
       <StoreConsumer>
         {({ state: { isSignin } }) => {
-          console.log("TCL: AppRouter -> render -> isSignin", isSignin);
           return (
             <Router>
               <>
@@ -42,8 +42,11 @@ class AppRouter extends React.Component {
                       <Link to="/signin/">Signin</Link>
                     </li>
                   </ul>
-
-                  <SignoutButton onClick={handleSignout}>Signout</SignoutButton>
+                  {isSignin ? (
+                    <SignoutButton onClick={handleSignout}>
+                      Signout
+                    </SignoutButton>
+                  ) : null}
                 </nav>
 
                 <Route
