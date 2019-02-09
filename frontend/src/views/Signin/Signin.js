@@ -22,27 +22,32 @@ class Signin extends React.Component {
     } = this.props;
     event.preventDefault();
 
-    const {
-      data: { success, token }
-    } = await axios
-      .post(
-        `${process.env.REACT_APP_SERVER_URL}:${
-          process.env.REACT_APP_SERVER_PORT
-        }/apis/v1/login`,
-        {
-          id,
-          pw
-        }
-      )
-      .then(res => res)
-      .catch(err => console.error(err));
+    try {
+      const {
+        data: { success, token }
+      } = await axios
+        .post(
+          `${process.env.REACT_APP_SERVER_URL}:${
+            process.env.REACT_APP_SERVER_PORT
+          }/apis/v1/login`,
+          {
+            id,
+            pw
+          }
+        )
+        .then(res => res)
+        .catch(err => console.error(err));
 
-    console.log("TCL: Signin -> success, token", success, token);
-
-    cookies.set("token", token, { path: "/" });
-    setSignin(true);
-    alert("Login Success!");
-    push("/");
+      console.log("TCL: Signin -> success, token", success, token);
+      cookies.set("token", token, { path: "/" });
+      setSignin(true);
+      alert("Login Success!");
+      push("/");
+    } catch (error) {
+      console.error(error);
+      alert("Error");
+      return false;
+    }
   };
 
   handleSignup = () => {
