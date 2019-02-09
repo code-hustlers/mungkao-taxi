@@ -7,15 +7,25 @@ import {
 } from "react-router-dom";
 import { Signin, Home } from "../views";
 import { StoreConsumer } from "../store/Store";
+import SignoutButton from "../components/SignoutButton";
+import { withCookies } from "react-cookie";
+import withStore from "../lib/withStore";
 
 class AppRouter extends React.Component {
-  // state = {
-  //   isSignin: false
-  // };
+  handleSignout = () => {
+    const {
+      cookies,
+      store: {
+        actions: { setSignin }
+      }
+    } = this.props;
+    cookies.remove("token");
+    setSignin(false);
+    alert("Signout!");
+  };
 
   render() {
-    // const { isSignin } = this.state;
-
+    const { handleSignout } = this;
     return (
       <StoreConsumer>
         {({ state: { isSignin } }) => {
@@ -32,6 +42,8 @@ class AppRouter extends React.Component {
                       <Link to="/signin/">Signin</Link>
                     </li>
                   </ul>
+
+                  <SignoutButton onClick={handleSignout}>Signout</SignoutButton>
                 </nav>
 
                 <Route
@@ -54,4 +66,4 @@ class AppRouter extends React.Component {
   }
 }
 
-export default AppRouter;
+export default withCookies(withStore(AppRouter));
