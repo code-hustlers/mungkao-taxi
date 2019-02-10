@@ -5,7 +5,7 @@ import {
   Link,
   Redirect
 } from "react-router-dom";
-import { Signin, Home } from "../views";
+import { Signin, Home, Signup } from "../views";
 import { StoreConsumer } from "../store/Store";
 import SignoutButton from "../components/SignoutButton";
 import { withCookies } from "react-cookie";
@@ -60,6 +60,7 @@ class AppRouter extends React.Component {
                   path="/signin/"
                   render={() => (isSignin ? <Redirect to="/" /> : <Signin />)}
                 />
+                <Route path="/signup/" component={Signup} />
               </>
             </Router>
           );
