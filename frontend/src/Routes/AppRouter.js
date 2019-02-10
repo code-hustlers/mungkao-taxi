@@ -41,6 +41,9 @@ class AppRouter extends React.Component {
                     <li>
                       <Link to="/signin/">Signin</Link>
                     </li>
+                    <li>
+                      <Link to="/signup/">Signup</Link>
+                    </li>
                   </ul>
                   {isSignin ? (
                     <SignoutButton onClick={handleSignout}>
