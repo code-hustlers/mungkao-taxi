@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { flexCenter, CardStyle, RaisedCardStyle } from "../../styles/mixin";
+import { flexCenter } from "../../styles/mixin";
 
 export const Container = styled.div`
   flex: 1;
@@ -23,21 +23,6 @@ export const Input = styled.input`
   height: 2rem;
   align-self: inherit;
   padding: 0.5rem 1rem;
-`;
-
-export const CardForm = styled.form`
-  ${flexCenter};
-  flex-flow: column wrap;
-  flex: 1;
-  align-self: stretch;
-  padding: 1rem;
-  /* ${CardStyle}; */
-  transition: 0.5s;
-  &:focus,
-  &:hover {
-    transition: 0.5s;
-    /* ${RaisedCardStyle}; */
-  }
 `;
 
 export const Button = styled.button`
