@@ -3,7 +3,7 @@ import axios from "axios";
 import { withCookies } from "react-cookie";
 import { withRouter } from "react-router-dom";
 import withStore from "../../lib/withStore";
-
+//
 class Home extends React.Component {
   state = {
     userInfo: {}
