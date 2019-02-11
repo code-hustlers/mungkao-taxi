@@ -33,6 +33,7 @@ export default class Messaging {
     this.messaging = firebase.messaging();
     this.checkPublicKey();
     this.requestPermission();
+    this.searchToken();
   }
 
   checkPublicKey() {
@@ -49,6 +50,34 @@ export default class Messaging {
       })
       .catch(function(err) {
         console.log("Unable to get permission to notify.", err);
+      });
+  }
+
+  searchToken() {
+    this.messaging
+      .getToken()
+      .then(function(currentToken) {
+        if (currentToken) {
+          console.log(
+            "TCL: Messaging -> searchToken -> currentToken",
+            currentToken
+          );
+          // sendTokenToServer(currentToken);
+          // updateUIForPushEnabled(currentToken);
+        } else {
+          // Show permission request.
+          console.log(
+            "No Instance ID token available. Request permission to generate one."
+          );
+          // Show permission UI.
+          // updateUIForPushPermissionRequired();
+          // setTokenSentToServer(false);
+        }
+      })
+      .catch(function(err) {
+        console.log("An error occurred while retrieving token. ", err);
+        // showToken('Error retrieving Instance ID token. ', err);
+        // setTokenSentToServer(false);
       });
   }
 
