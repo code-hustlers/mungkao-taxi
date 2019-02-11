@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import Input from "../../components/Input";
 import Button from "../../components/Button";
 import { CardForm } from "../../components/Card/CardForm";
 import axios from "axios";
 import { withRouter } from "react-router-dom";
+import { useInput } from "../../hooks";
 
 const Container = styled.div`
   display: flex;
@@ -13,8 +14,8 @@ const Container = styled.div`
 `;
 
 function Signup(props) {
-  const [id, setId] = useState("");
-  const [pw, setPw] = useState("");
+  const id = useInput("");
+  const pw = useInput("");
 
   console.log("TCL: Signup -> id,pw", id, pw);
 
@@ -53,16 +54,8 @@ function Signup(props) {
   return (
     <Container>
       <CardForm card>
-        <Input
-          value={id}
-          onChange={event => setId(event.target.value)}
-          placeholder="id"
-        />
-        <Input
-          value={pw}
-          onChange={event => setPw(event.target.value)}
-          placeholder="password"
-        />
+        <Input {...id} placeholder="id" />
+        <Input {...pw} placeholder="password" />
         <Button onClick={handleSignup}>Signup</Button>
       </CardForm>
     </Container>
