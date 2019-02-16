@@ -7,11 +7,13 @@ import withStore from "../../lib/withStore";
 import Input from "../../components/Input";
 import Button from "../../components/Button";
 import { CardForm } from "../../components/Card/CardForm";
+import Loading from "../../components/Loading";
 
 class Signin extends React.Component {
   state = {
     id: "",
-    pw: ""
+    pw: "",
+    loading: false
   };
 
   handleSignin = async event => {
@@ -24,6 +26,7 @@ class Signin extends React.Component {
       }
     } = this.props;
     event.preventDefault();
+    this.setState({ loading: true });
 
     try {
       const {
@@ -50,6 +53,8 @@ class Signin extends React.Component {
       console.error(error);
       alert("Error");
       return false;
+    } finally {
+      this.setState({ loading: false });
     }
   };
 
@@ -67,10 +72,11 @@ class Signin extends React.Component {
 
   render() {
     const { handleSignin, handleSignup, handleChange } = this;
-    const { id, pw } = this.state;
+    const { id, pw, loading } = this.state;
 
     return (
       <Container>
+        <Loading loading={loading} />
         <CardForm onSubmit={handleSignin}>
           <h1>Signin</h1>
           <Input
