@@ -37,31 +37,31 @@ class App extends Component {
 
     // 2. 메시징 객체 검색
     // Retrieve Firebase Messaging object.
-    const messaging = firebase.messaging();
+    // const messaging = firebase.messaging();
 
-    // 3. 앱에서 웹 사용자 인증 정보 구성
-    // Add the public key generated from the console here.
-    messaging.usePublicVapidKey(config.publicVapidKey);
+    // // 3. 앱에서 웹 사용자 인증 정보 구성
+    // // Add the public key generated from the console here.
+    // messaging.usePublicVapidKey(config.publicVapidKey);
 
-    // 4. 알림 수신 권한 요청
-    messaging
-      .requestPermission()
-      .then(function() {
-        console.log("Notification permission granted.");
-        // TODO(developer): Retrieve an Instance ID token for use with FCM.
-        // ...
-      })
-      .catch(function(err) {
-        console.log("Unable to get permission to notify.", err);
-      });
-    // 5. 등록 토큰 액세스
-    // 5-1. 현재 등록 토큰 검색
-    try {
-      const token = await messaging.getToken();
-      console.log("token do usuário:", token);
-    } catch (error) {
-      console.error(error);
-    }
+    // // 4. 알림 수신 권한 요청
+    // messaging
+    //   .requestPermission()
+    //   .then(function() {
+    //     console.log("Notification permission granted.");
+    //     // TODO(developer): Retrieve an Instance ID token for use with FCM.
+    //     // ...
+    //   })
+    //   .catch(function(err) {
+    //     console.log("Unable to get permission to notify.", err);
+    //   });
+    // // 5. 등록 토큰 액세스
+    // // 5-1. 현재 등록 토큰 검색
+    // try {
+    //   const token = await messaging.getToken();
+    //   console.log("token do usuário:", token);
+    // } catch (error) {
+    //   console.error(error);
+    // }
   }
 
   render() {
