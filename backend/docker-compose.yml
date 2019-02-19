@@ -9,4 +9,3 @@ services:
       NODE_ENV: development
     volumes:
       - ./:/usr/src/app
-    # command: ["npm installnpm start"]
