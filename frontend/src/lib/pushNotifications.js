@@ -4,10 +4,12 @@ export const initializeFirebase = () => {
   firebase.initializeApp({
     messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID
   });
+
+  console.log("[1] : initializeFirebase");
 };
-navigator.serviceWorker.register("/my-sw.js").then(registration => {
-  firebase.messaging().useServiceWorker(registration);
-});
+// navigator.serviceWorker.register("/my-sw.js").then(registration => {
+//   firebase.messaging().useServiceWorker(registration);
+// });
 
 export const askForPermissioToReceiveNotifications = async () => {
   try {
