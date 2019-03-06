@@ -3,7 +3,46 @@ import axios from "axios";
 import { withCookies } from "react-cookie";
 import { withRouter } from "react-router-dom";
 import withStore from "../../lib/withStore";
-//
+import Button from '../../components/Button';
+// fullpage
+import ReactFullpage from '@fullpage/react-fullpage';
+import 'fullpage.js/vendors/scrolloverflow';
+
+const fullpageProps = {
+  scrollOverflow: true,
+  sectionsColor: ['#fff', '#fff'],
+  anchors: ['my', 'do']
+};
+
+const FullpageWrapper = (...props) => (
+  <ReactFullpage
+    {...fullpageProps}
+    render = {({ state, fullpageApi }) => {
+      const { userInfo, status } = props[0];
+      console.log({userInfo}, {status});
+      return(
+        <ReactFullpage.Wrapper>
+          <div className="section">
+            <span style={{color:'#8e44ad'}}>{userInfo.id}</span>
+            <span>님, 어서오세요.</span>
+          </div>
+          <div className="section">
+            {status === 1 ?
+              (<Button>
+                call
+              </Button>)
+              :
+              (<Button>
+                approval
+              </Button>)
+            }
+          </div>
+        </ReactFullpage.Wrapper>
+      );
+    }}
+  />
+)
+
 class Home extends React.Component {
   state = {
     userInfo: {}
@@ -42,12 +81,13 @@ class Home extends React.Component {
 
   render() {
     const { userInfo } = this.state;
-    console.log(userInfo);
 
     return (
       <div>
-        <h1>Home</h1>
-        <span>{userInfo.id}</span> 님, 어서오세요.
+        <FullpageWrapper
+          userInfo={userInfo}
+          status={1}
+        />
       </div>
     );
   }
