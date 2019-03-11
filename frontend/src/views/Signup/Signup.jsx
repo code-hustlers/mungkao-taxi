@@ -30,25 +30,38 @@ function Signup(props) {
     const {
       history: { push }
     } = props;
-
-    try {
-      const {
-        data: { result, msg }
-      } = await axios.post(
-        `${REACT_APP_SERVER_URL}:${REACT_APP_SERVER_PORT}${REACT_APP_SERVER_API_PREFIX}/signup`,
-        { id, pw }
-      );
-
-      // const 문자로 리팩토링 필요
-      if (result === 1) {
-        alert(msg);
-        push("/");
-      } else {
-        alert(`[Error Code : ${result}] : ${msg}`);
+    console.log({id}, {pw});
+    return axios({
+      method: 'POST',
+      url: `${REACT_APP_SERVER_URL}:${REACT_APP_SERVER_PORT}${REACT_APP_SERVER_API_PREFIX}/signup`,
+      data: {
+        id: id.value,
+        pw: pw.value
       }
-    } catch (error) {
-      console.error(error);
-    }
+    }).then(data => {
+      console.log(data);
+    }).catch(err => {
+      console.log(err);
+    });
+
+    // try {
+    //   const {
+    //     data: { result, msg }
+    //   } = await axios.post(
+    //     `${REACT_APP_SERVER_URL}:${REACT_APP_SERVER_PORT}${REACT_APP_SERVER_API_PREFIX}/signup`,
+    //     { id, pw }
+    //   );
+
+    //   // const 문자로 리팩토링 필요
+    //   if (result === 1) {
+    //     alert(msg);
+    //     push("/");
+    //   } else {
+    //     alert(`[Error Code : ${result}] : ${msg}`);
+    //   }
+    // } catch (error) {
+    //   console.error(error);
+    // }
   };
 
   return (
