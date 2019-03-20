@@ -8,7 +8,10 @@ import Input from "../../components/Input";
 import Button from "../../components/Button";
 import { CardForm } from "../../components/Card/CardForm";
 import Loading from "../../components/Loading";
-import { askForPermissioToReceiveNotifications } from "../../lib/pushNotifications";
+import {
+  // askForPermissioToReceiveNotifications,
+  subscribeUser
+} from "../../lib/pushNotifications";
 
 class Signin extends React.Component {
   state = {
@@ -95,7 +98,8 @@ class Signin extends React.Component {
           <Button type="button" variant={"primary"} onClick={handleSignup}>
             Signup
           </Button>
-          <Button type="button" onClick={askForPermissioToReceiveNotifications}>
+          {/* <Button type="button" onClick={askForPermissioToReceiveNotifications}> */}
+          <Button type="button" onClick={subscribeUser}>
             Request Push Noti
           </Button>
         </CardForm>
