@@ -10,13 +10,14 @@ import urlB64ToUint8Array from "./urlB64ToUint8Array";
 //   messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
 //   publicVapidKey: process.env.REACT_APP_PUBLIC_VAPID_KEY
 // };
-const applicationServerPublicKey = process.env.REACT_APP_PUBLIC_KEY;
+// const applicationServerPublicKey = process.env.REACT_APP_PUBLIC_KEY;
+const applicationServerPublicKey =
+  "BFAfLRJ9CI7yHX7NsjK8WY83C5vDW-LA1_gjLRiF5PF6CvnqHxu33hxYBsC-5OkH5pNDmdNYP75gKwOwwd4xQ9c";
 
 let isSubscribed = false;
 let swRegistration = null;
 
 export const requestPermission = () => {
-  console.log("TCL: requestPermission -> requestPermission");
   if ("serviceWorker" in navigator && "PushManager" in window) {
     console.log("Service Worker and Push is supported");
 
