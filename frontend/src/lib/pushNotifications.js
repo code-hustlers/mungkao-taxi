@@ -60,10 +60,9 @@ export const subscribeUser = () => {
       console.log("User is subscribed:", subscription);
 
       console.log(JSON.stringify(subscription));
-      // updateSubscriptionOnServer(subscription);
-
       isSubscribed = true;
-
+      return JSON.stringify(subscription);
+      // updateSubscriptionOnServer(subscription);
       // updateBtn();
     })
     .catch(function(err) {

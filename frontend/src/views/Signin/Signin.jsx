@@ -74,8 +74,38 @@ class Signin extends React.Component {
     this.setState({ [name]: event.target.value });
   };
 
+  handleRequestPushNoti = () => {
+    this.setState({ loading: true });
+    try {
+      axios.post(
+        `${process.env.REACT_APP_SERVER_URL}:${
+          process.env.REACT_APP_SERVER_PORT
+        }/push`,
+        { subscription: subscribeUser() }
+      );
+      // axios.post({
+      //   method: "POST",
+      //   url: `${process.env.REACT_APP_SERVER_URL}:${
+      //     process.env.REACT_APP_SERVER_PORT
+      //   }/push`,
+      //   data: {
+      //     subscription: subscribeUser()
+      //   }
+      // });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.setState({ loading: false });
+    }
+  };
+
   render() {
-    const { handleSignin, handleSignup, handleChange } = this;
+    const {
+      handleSignin,
+      handleSignup,
+      handleChange,
+      handleRequestPushNoti
+    } = this;
     const { id, pw, loading } = this.state;
 
     return (
@@ -99,7 +129,7 @@ class Signin extends React.Component {
             Signup
           </Button>
           {/* <Button type="button" onClick={askForPermissioToReceiveNotifications}> */}
-          <Button type="button" onClick={subscribeUser}>
+          <Button type="button" onClick={handleRequestPushNoti}>
             Request Push Noti
           </Button>
         </CardForm>
