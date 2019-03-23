@@ -22,7 +22,7 @@ export const requestPermission = () => {
     console.log("Service Worker and Push is supported");
 
     navigator.serviceWorker
-      .register("test-sw.js")
+      .register("push-notification-sw.js")
       // .register("service-worker.js")
       .then(swReg => {
         console.log("Service Worker is registered", swReg);
