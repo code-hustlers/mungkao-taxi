@@ -8,6 +8,10 @@ const morgan = require("morgan");
 const jwt = require("jsonwebtoken");
 const session = require("express-session");
 
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(morgan("dev"));
+
 // CORS
 app.all("/*", function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -23,9 +27,6 @@ app.use(
     saveUninitialized: true
   })
 );
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-app.use(morgan("dev"));
 
 app.set("jwt-secret", "MuNgkaO");
 

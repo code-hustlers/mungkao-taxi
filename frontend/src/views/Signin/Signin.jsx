@@ -77,12 +77,21 @@ class Signin extends React.Component {
   handleRequestPushNoti = () => {
     this.setState({ loading: true });
     try {
-      axios.post(
-        `${process.env.REACT_APP_SERVER_URL}:${
-          process.env.REACT_APP_SERVER_PORT
-        }/push`,
-        { subscription: subscribeUser() }
-      );
+      axios
+        .post(
+          `${process.env.REACT_APP_SERVER_URL}:${
+            process.env.REACT_APP_SERVER_PORT
+          }/push`,
+          {
+            data: "hello",
+            subscription: subscribeUser()
+          }
+        )
+        .then(res => {
+          console.log("TCL: handleRequestPushNoti -> res", res);
+          return res;
+        })
+        .catch(error => console.error(error));
       // axios.post({
       //   method: "POST",
       //   url: `${process.env.REACT_APP_SERVER_URL}:${

@@ -12,7 +12,7 @@ import urlB64ToUint8Array from "./urlB64ToUint8Array";
 // };
 // const applicationServerPublicKey = process.env.REACT_APP_PUBLIC_KEY;
 const applicationServerPublicKey =
-  "BNkm32r0KSF3b4-scserhQqTgcdB5vBc-G6y5HJPLVNMUnTPgucUH2DZNNR8MD2wReGSbyqRAG8HWtU7ZLa3_Sc";
+  "BFAfLRJ9CI7yHX7NsjK8WY83C5vDW-LA1_gjLRiF5PF6CvnqHxu33hxYBsC-5OkH5pNDmdNYP75gKwOwwd4xQ9c";
 
 let isSubscribed = false;
 let swRegistration = null;

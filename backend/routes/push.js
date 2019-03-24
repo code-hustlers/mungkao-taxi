@@ -35,10 +35,8 @@ module.exports = app => {
   });
 
   app.post("/push", (req, res) => {
-    console.log("TCL: res", res);
-    console.log(req.body);
-    console.log(req.body.subscription);
-    res.send("Push!");
-    pushMunkao();
+    console.log("TCL: req.body", req.body);
+    res.send("Success Push Request!");
+    // pushMunkao();
   });
 };
