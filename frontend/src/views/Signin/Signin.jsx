@@ -78,7 +78,6 @@ class Signin extends React.Component {
     this.setState({ loading: true });
     try {
       const subscription = await subscribeUser();
-      console.log("TCL: handleRequestPushNoti -> subscription", subscription);
       axios
         .post(
           `${process.env.REACT_APP_SERVER_URL}:${
