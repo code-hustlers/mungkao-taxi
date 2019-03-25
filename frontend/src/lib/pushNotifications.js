@@ -12,7 +12,7 @@ import urlB64ToUint8Array from "./urlB64ToUint8Array";
 // };
 // const applicationServerPublicKey = process.env.REACT_APP_PUBLIC_KEY;
 const applicationServerPublicKey =
-  "BFAfLRJ9CI7yHX7NsjK8WY83C5vDW-LA1_gjLRiF5PF6CvnqHxu33hxYBsC-5OkH5pNDmdNYP75gKwOwwd4xQ9c";
+  "BEYVLhA-7BbZmTqy8u4iW1OqxcT7qATDE2mvm-b2H7Qm7ebsHe5xKwQILtx28U6_ZzVIM07BOCrwAPpv9WN8pEg";
 
 let isSubscribed = false;
 let swRegistration = null;
@@ -50,25 +50,29 @@ export const requestPermission = () => {
 };
 
 export const subscribeUser = () => {
-  const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
-  swRegistration.pushManager
-    .subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: applicationServerKey
-    })
-    .then(function(subscription) {
-      console.log("User is subscribed:", subscription);
+  return new Promise((resolve, reject) => {
+    const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
+    swRegistration.pushManager
+      .subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: applicationServerKey
+      })
+      .then(subscription => {
+        console.log("User is subscribed:", subscription);
 
-      console.log(JSON.stringify(subscription));
-      isSubscribed = true;
-      return JSON.stringify(subscription);
-      // updateSubscriptionOnServer(subscription);
-      // updateBtn();
-    })
-    .catch(function(err) {
-      console.log("Failed to subscribe the user: ", err);
-      // updateBtn();
-    });
+        console.log(JSON.stringify(subscription));
+        isSubscribed = true;
+        resolve(JSON.stringify(subscription));
+        // return JSON.stringify(subscription);
+        // updateSubscriptionOnServer(subscription);
+        // updateBtn();
+      })
+      .catch(err => {
+        console.log("Failed to subscribe the user: ", err);
+        reject(err);
+        // updateBtn();
+      });
+  });
 };
 
 export const initializeFirebase = () => {
