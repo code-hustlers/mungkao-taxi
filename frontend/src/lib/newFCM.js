@@ -18,6 +18,7 @@ export const init = () => {
   requestPermission(messaging);
   searchCurrentRegisteredToken(messaging);
   monitoringRefreshToken(messaging);
+  onMessageForeGround(messaging);
 };
 
 export const requestPermission = messaging => {
@@ -79,5 +80,16 @@ export const monitoringRefreshToken = messaging => {
         console.log("Unable to retrieve refreshed token ", err);
         // showToken("Unable to retrieve refreshed token ", err);
       });
+  });
+};
+
+export const onMessageForeGround = messaging => {
+  // Handle incoming messages. Called when:
+  // - a message is received while the app has focus
+  // - the user clicks on an app notification created by a service worker
+  //   `messaging.setBackgroundMessageHandler` handler.
+  messaging.onMessage(function(payload) {
+    console.log("Message received. ", payload);
+    // ...
   });
 };
