@@ -2,8 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
+import { init } from "./lib/newFCM";
 // import { initializeFirebase, requestPermission } from "./lib/pushNotifications";
-import { requestPermission } from "./lib/pushNotifications";
+// import { requestPermission } from "./lib/pushNotifications";
 
 ReactDOM.render(<App />, document.getElementById("root"));
 
@@ -12,4 +13,5 @@ ReactDOM.render(<App />, document.getElementById("root"));
 // Learn more about service workers: http://bit.ly/CRA-PWA
 serviceWorker.register();
 // initializeFirebase();
-requestPermission();
+// requestPermission();
+init();
