@@ -16,6 +16,7 @@ export const init = () => {
   // Add the public key generated from the console here.
   messaging.usePublicVapidKey(process.env.REACT_APP_PUBLIC_KEY);
   requestPermission(messaging);
+  searchCurrentRegisteredToken(messaging);
 };
 
 export const requestPermission = messaging => {
@@ -28,5 +29,32 @@ export const requestPermission = messaging => {
     })
     .catch(function(err) {
       console.log("Unable to get permission to notify.", err);
+    });
+};
+
+export const searchCurrentRegisteredToken = messaging => {
+  // Get Instance ID token. Initially this makes a network call, once retrieved
+  // subsequent calls to getToken will return from cache.
+  messaging
+    .getToken()
+    .then(function(currentToken) {
+      if (currentToken) {
+        console.log("TCL: currentToken", currentToken);
+        // sendTokenToServer(currentToken);
+        // updateUIForPushEnabled(currentToken);
+      } else {
+        // Show permission request.
+        console.log(
+          "No Instance ID token available. Request permission to generate one."
+        );
+        // Show permission UI.
+        // updateUIForPushPermissionRequired();
+        // setTokenSentToServer(false);
+      }
+    })
+    .catch(function(err) {
+      console.log("An error occurred while retrieving token. ", err);
+      // showToken("Error retrieving Instance ID token. ", err);
+      // setTokenSentToServer(false);
     });
 };
