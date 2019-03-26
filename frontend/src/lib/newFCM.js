@@ -15,4 +15,18 @@ export const init = () => {
   console.log("TCL: init -> messaging", messaging);
   // Add the public key generated from the console here.
   messaging.usePublicVapidKey(process.env.REACT_APP_PUBLIC_KEY);
+  requestPermission(messaging);
+};
+
+export const requestPermission = messaging => {
+  messaging
+    .requestPermission()
+    .then(function() {
+      console.log("Notification permission granted.");
+      // TODO(developer): Retrieve an Instance ID token for use with FCM.
+      // ...
+    })
+    .catch(function(err) {
+      console.log("Unable to get permission to notify.", err);
+    });
 };
