@@ -10,11 +10,9 @@ export const init = () => {
     messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID
   };
   firebase.initializeApp(config);
-  searchMessagingObj();
-};
-
-export const searchMessagingObj = () => {
   // Retrieve Firebase Messaging object.
   const messaging = firebase.messaging();
   console.log("TCL: init -> messaging", messaging);
+  // Add the public key generated from the console here.
+  messaging.usePublicVapidKey(process.env.REACT_APP_PUBLIC_KEY);
 };
