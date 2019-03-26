@@ -17,6 +17,7 @@ export const init = () => {
   messaging.usePublicVapidKey(process.env.REACT_APP_PUBLIC_KEY);
   requestPermission(messaging);
   searchCurrentRegisteredToken(messaging);
+  monitoringRefreshToken(messaging);
 };
 
 export const requestPermission = messaging => {
@@ -57,4 +58,26 @@ export const searchCurrentRegisteredToken = messaging => {
       // showToken("Error retrieving Instance ID token. ", err);
       // setTokenSentToServer(false);
     });
+};
+
+export const monitoringRefreshToken = messaging => {
+  // Callback fired if Instance ID token is updated.
+  messaging.onTokenRefresh(function() {
+    messaging
+      .getToken()
+      .then(function(refreshedToken) {
+        console.log("TCL: refreshedToken", refreshedToken);
+        console.log("Token refreshed.");
+        // Indicate that the new Instance ID token has not yet been sent to the
+        // app server.
+        // setTokenSentToServer(false);
+        // Send Instance ID token to app server.
+        // sendTokenToServer(refreshedToken);
+        // ...
+      })
+      .catch(function(err) {
+        console.log("Unable to retrieve refreshed token ", err);
+        // showToken("Unable to retrieve refreshed token ", err);
+      });
+  });
 };
