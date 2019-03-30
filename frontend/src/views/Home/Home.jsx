@@ -3,45 +3,43 @@ import axios from "axios";
 import { withCookies } from "react-cookie";
 import { withRouter } from "react-router-dom";
 import withStore from "../../lib/withStore";
-import Button from '../../components/Button';
+import Button from "../../components/Button";
 // fullpage
-import ReactFullpage from '@fullpage/react-fullpage';
-import 'fullpage.js/vendors/scrolloverflow';
+import ReactFullpage from "@fullpage/react-fullpage";
+import "fullpage.js/vendors/scrolloverflow";
+import { searchCurrentRegisteredToken } from "../../lib/newFCM";
 
 const fullpageProps = {
   scrollOverflow: true,
-  sectionsColor: ['#fff', '#fff'],
-  anchors: ['my', 'do']
+  sectionsColor: ["#fff", "#fff"],
+  anchors: ["my", "do"]
+};
+const fcmTest = async () => {
+  const token = await searchCurrentRegisteredToken();
+  console.log("TCL: fcmTest -> token", token);
 };
 
 const FullpageWrapper = (...props) => (
   <ReactFullpage
     {...fullpageProps}
-    render = {({ state, fullpageApi }) => {
+    render={({ state, fullpageApi }) => {
       const { userInfo, status } = props[0];
-      console.log({userInfo}, {status});
-      return(
+      console.log({ userInfo }, { status });
+      return (
         <ReactFullpage.Wrapper>
           <div className="section">
-            <span style={{color:'#8e44ad'}}>{userInfo.id}</span>
+            <span style={{ color: "#8e44ad" }}>{userInfo.id}</span>
             <span>님, 어서오세요.</span>
+            <button onClick={fcmTest}>FCM Test</button>
           </div>
           <div className="section">
-            {status === 1 ?
-              (<Button>
-                call
-              </Button>)
-              :
-              (<Button>
-                approval
-              </Button>)
-            }
+            {status === 1 ? <Button>call</Button> : <Button>approval</Button>}
           </div>
         </ReactFullpage.Wrapper>
       );
     }}
   />
-)
+);
 
 class Home extends React.Component {
   state = {
@@ -84,10 +82,7 @@ class Home extends React.Component {
 
     return (
       <div>
-        <FullpageWrapper
-          userInfo={userInfo}
-          status={1}
-        />
+        <FullpageWrapper userInfo={userInfo} status={1} />
       </div>
     );
   }
