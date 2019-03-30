@@ -2,6 +2,28 @@ const DEFAULT_API = "/apis/v1";
 module.exports = (app, jwt, User) => {
   // API LIST
 
+  // GET driver info
+  app.get(`${DEFAULT_API}/driver/list`, (req, res) => {
+    User.find({ position: 1 }, (err, dirvers) => {
+      if(err) throw err;
+      // console.log('dirver: ', dirvers);
+      let customDrivers = dirvers.map(driver => {
+        return Object.assign({}, {
+          id: driver.id,
+          name: driver.name,
+          status: driver.status,
+          date: driver.create_date
+        });
+      });
+      console.log('driver1: ', customDrivers);
+      try {
+        res.status(200).json(customDrivers)
+      } catch (error) {
+        console.log(error)
+      }
+    })
+  })
+
   // User check
   app.post(`${DEFAULT_API}/auth/check`, (req, res) => {
     console.log(`API: ${DEFAULT_API}/auth/check =============== ${req} :::::`);

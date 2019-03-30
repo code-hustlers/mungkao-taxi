@@ -7,19 +7,42 @@ import Button from '../../components/Button';
 // fullpage
 import ReactFullpage from '@fullpage/react-fullpage';
 import 'fullpage.js/vendors/scrolloverflow';
+import { CardForm } from "../../components/Card/CardForm";
+import styled from 'styled-components';
 
 const fullpageProps = {
   scrollOverflow: true,
   sectionsColor: ['#fff', '#fff'],
-  anchors: ['my', 'do']
+  anchors: ['overview', 'actions']
 };
 
-const FullpageWrapper = (...props) => (
+const Title = styled.h1`
+  text-align: center;
+`;
+
+const Div = styled.div`
+  background: ${props => props.status !== 0 ? '#eee' : '#fff'};
+`;
+
+const FullpageWrapper = (props) => (
   <ReactFullpage
     {...fullpageProps}
     render = {({ state, fullpageApi }) => {
-      const { userInfo, status } = props[0];
-      console.log({userInfo}, {status});
+      const { userInfo, drivers } = props;
+      console.log({userInfo}, {drivers});
+
+      const driverElem = drivers.map((el, idx) => {
+        return(
+          <CardForm key={idx}>
+            <Div status={el.status}>
+              <h2>{el.id}</h2>
+              <span>{el.name}</span>
+              <span>{el.date}</span><br/>
+              {el.status !== 0 ? <span style={{color:'red'}}>*운전중 입니다 !</span> : null}
+            </Div>
+          </CardForm>
+        );
+      });
       return(
         <ReactFullpage.Wrapper>
           <div className="section">
@@ -27,15 +50,19 @@ const FullpageWrapper = (...props) => (
             <span>님, 어서오세요.</span>
           </div>
           <div className="section">
-            {status === 1 ?
-              (<Button>
-                call
-              </Button>)
-              :
-              (<Button>
-                approval
-              </Button>)
-            }
+            <div>
+              <Title>마음에 드는 운전자를 선택하세요:D</Title>
+              {driverElem}
+              {!userInfo.position || userInfo.position === 0 ?
+                (<Button>
+                  call
+                </Button>)
+                :
+                (<Button>
+                  approval
+                </Button>)
+              }
+            </div>
           </div>
         </ReactFullpage.Wrapper>
       );
@@ -45,12 +72,14 @@ const FullpageWrapper = (...props) => (
 
 class Home extends React.Component {
   state = {
-    userInfo: {}
+    userInfo: {},
+    drivers: [],
   };
 
   componentDidMount() {
-    const { handleCheck } = this;
+    const { handleCheck, handleGetDriver } = this;
     handleCheck();
+    handleGetDriver();
   }
 
   handleCheck = async () => {
@@ -79,14 +108,26 @@ class Home extends React.Component {
       });
   };
 
+  handleGetDriver = async () => {
+      await axios({
+        method: 'get',
+        url: `${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/apis/v1/driver/list`
+      }).then(res => {
+        this.setState({ drivers: res.data });
+      }).catch(err => {
+        console.log(err, 'error');
+      });
+  }
+
   render() {
-    const { userInfo } = this.state;
+    const { userInfo, drivers } = this.state;
+    // console.log('render drivers : ', drivers);
 
     return (
       <div>
         <FullpageWrapper
           userInfo={userInfo}
-          status={1}
+          drivers={drivers}
         />
       </div>
     );
