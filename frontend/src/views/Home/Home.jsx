@@ -3,18 +3,23 @@ import axios from "axios";
 import { withCookies } from "react-cookie";
 import { withRouter } from "react-router-dom";
 import withStore from "../../lib/withStore";
-import Button from '../../components/Button';
+import Button from "../../components/Button";
 // fullpage
 import ReactFullpage from '@fullpage/react-fullpage';
 import 'fullpage.js/vendors/scrolloverflow';
 import { CardForm } from "../../components/Card/CardForm";
 import styled from 'styled-components';
+import { searchCurrentRegisteredToken } from "../../lib/newFCM";
 
 const fullpageProps = {
   scrollOverflow: true,
   sectionsColor: ['#fff', '#fff'],
   anchors: ['overview', 'actions']
-};
+}
+const fcmTest = async () => {
+  const token = await searchCurrentRegisteredToken();
+  console.log("TCL: fcmTest -> token", token);
+}
 
 const Title = styled.h1`
   text-align: center;
@@ -46,8 +51,9 @@ const FullpageWrapper = (props) => (
       return(
         <ReactFullpage.Wrapper>
           <div className="section">
-            <span style={{color:'#8e44ad'}}>{userInfo.id}</span>
+            <span style={{ color: "#8e44ad" }}>{userInfo.id}</span>
             <span>님, 어서오세요.</span>
+            <button onClick={fcmTest}>FCM Test</button>
           </div>
           <div className="section">
             <div>
@@ -68,7 +74,7 @@ const FullpageWrapper = (props) => (
       );
     }}
   />
-)
+);
 
 class Home extends React.Component {
   state = {

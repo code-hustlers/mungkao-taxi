@@ -1,6 +1,8 @@
 import firebase from "firebase";
 
-export const init = () => {
+let messaging;
+
+export const init = async () => {
   var config = {
     apiKey: process.env.REACT_APP_API_KEY,
     authDomain: process.env.REACT_APP_AUTH_DOMAIN,
@@ -11,12 +13,14 @@ export const init = () => {
   };
   firebase.initializeApp(config);
   // Retrieve Firebase Messaging object.
-  const messaging = firebase.messaging();
+  // const messaging = firebase.messaging();
+  messaging = firebase.messaging();
   console.log("TCL: init -> messaging", messaging);
   // Add the public key generated from the console here.
   messaging.usePublicVapidKey(process.env.REACT_APP_PUBLIC_KEY);
   requestPermission(messaging);
-  searchCurrentRegisteredToken(messaging);
+  // const token = await searchCurrentRegisteredToken(messaging);
+  // console.log("TCL: init -> token", token);
   monitoringRefreshToken(messaging);
   onMessageForeGround(messaging);
 };
@@ -34,31 +38,35 @@ export const requestPermission = messaging => {
     });
 };
 
-export const searchCurrentRegisteredToken = messaging => {
-  // Get Instance ID token. Initially this makes a network call, once retrieved
-  // subsequent calls to getToken will return from cache.
-  messaging
-    .getToken()
-    .then(function(currentToken) {
-      if (currentToken) {
-        console.log("TCL: currentToken", currentToken);
-        // sendTokenToServer(currentToken);
-        // updateUIForPushEnabled(currentToken);
-      } else {
-        // Show permission request.
-        console.log(
-          "No Instance ID token available. Request permission to generate one."
-        );
-        // Show permission UI.
-        // updateUIForPushPermissionRequired();
+export const searchCurrentRegisteredToken = (_messaging = messaging) => {
+  return new Promise((resolve, reject) => {
+    // Get Instance ID token. Initially this makes a network call, once retrieved
+    // subsequent calls to getToken will return from cache.
+    _messaging
+      .getToken()
+      .then(function(currentToken) {
+        if (currentToken) {
+          // console.log("TCL: currentToken", currentToken);
+          resolve(currentToken);
+          // sendTokenToServer(currentToken);
+          // updateUIForPushEnabled(currentToken);
+        } else {
+          // Show permission request.
+          console.log(
+            "No Instance ID token available. Request permission to generate one."
+          );
+          // Show permission UI.
+          // updateUIForPushPermissionRequired();
+          // setTokenSentToServer(false);
+        }
+      })
+      .catch(function(err) {
+        console.log("An error occurred while retrieving token. ", err);
+        reject(err);
+        // showToken("Error retrieving Instance ID token. ", err);
         // setTokenSentToServer(false);
-      }
-    })
-    .catch(function(err) {
-      console.log("An error occurred while retrieving token. ", err);
-      // showToken("Error retrieving Instance ID token. ", err);
-      // setTokenSentToServer(false);
-    });
+      });
+  });
 };
 
 export const monitoringRefreshToken = messaging => {
