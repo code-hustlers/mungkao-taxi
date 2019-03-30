@@ -68,7 +68,8 @@ module.exports = (app, jwt, User) => {
             _id: user[0]._id,
             id: user[0].id,
             name: user[0].name,
-            gender: user[0].gender
+            position: user[0].position,
+            status: user[0].status
           },
           secret,
           {
@@ -104,8 +105,8 @@ module.exports = (app, jwt, User) => {
     }
 
     try {
-      await jwt.verify(token, req.app.get("jwt-secret"), (err, decoded) => {
-        console.log("TCL: decoded", decoded);
+      await jwt.verify(token, req.app.get("jwt-secret"), (err, decoded, other) => {
+        console.log("TCL: decoded", decoded, other);
         res.json(decoded);
       });
     } catch (error) {
