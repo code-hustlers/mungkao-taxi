@@ -21,33 +21,42 @@ const fcmTest = async () => {
   console.log("TCL: fcmTest -> token", token);
 }
 
-const Title = styled.h1`
+const Title = styled.div`
   text-align: center;
+  font-size: 1.3rem;
+  font-weight: bold;
 `;
 
 const Div = styled.div`
-  background: ${props => props.status !== 0 ? '#eee' : '#fff'};
+  &:hover {
+    background: black;
+    color: #fff;
+  };
+  ${props => props.driverID === props.id ?
+    `background: black;
+    color: #fff;`
+  : null}
 `;
 
 const FullpageWrapper = (props) => (
   <ReactFullpage
     {...fullpageProps}
     render = {({ state, fullpageApi }) => {
-      const { userInfo, drivers } = props;
-      console.log({userInfo}, {drivers});
+      const { userInfo, drivers, handleSelectDriver, driverID, handleCall } = props;
+      // console.log({userInfo}, {drivers});
 
-      const driverElem = drivers.map((el, idx) => {
-        return(
-          <CardForm key={idx}>
-            <Div status={el.status}>
+      const driverElem = drivers.map(el => {
+        return(el.status === 0 ?
+          <CardForm key={el.id} >
+            <Div onClick={handleSelectDriver(el.id)} driverID={driverID} id={el.id}>
               <h2>{el.id}</h2>
               <span>{el.name}</span>
               <span>{el.date}</span><br/>
-              {el.status !== 0 ? <span style={{color:'red'}}>*운전중 입니다 !</span> : null}
             </Div>
           </CardForm>
-        );
+          : null);
       });
+
       return(
         <ReactFullpage.Wrapper>
           <div className="section">
@@ -60,7 +69,7 @@ const FullpageWrapper = (props) => (
               <Title>마음에 드는 운전자를 선택하세요:D</Title>
               {driverElem}
               {!userInfo.position || userInfo.position === 0 ?
-                (<Button>
+                (<Button onClick={handleCall} style={{width:'80%'}} >
                   call
                 </Button>)
                 :
@@ -80,6 +89,7 @@ class Home extends React.Component {
   state = {
     userInfo: {},
     drivers: [],
+    driverID: '',
   };
 
   componentDidMount() {
@@ -125,8 +135,28 @@ class Home extends React.Component {
       });
   }
 
+  handleSelectDriver = driverID => () => {
+    this.setState({ driverID });
+  }
+
+  handleCall = () => {
+    const { driverID } = this.state;
+
+    if(driverID === '') {
+      alert('운전자를 선택하여 주십시오.');
+    }else if(window.confirm(`${driverID}님에게 호출을 요청하시겠습니까 ?`)) {
+      // message call
+    }else {
+      this.setState({ driverID: '' });
+    }
+  }
+
+  handleApproval = () => {
+    
+  }
+
   render() {
-    const { userInfo, drivers } = this.state;
+    const { userInfo, drivers, driverID } = this.state;
     // console.log('render drivers : ', drivers);
 
     return (
@@ -134,6 +164,9 @@ class Home extends React.Component {
         <FullpageWrapper
           userInfo={userInfo}
           drivers={drivers}
+          handleSelectDriver={this.handleSelectDriver}
+          driverID={driverID}
+          handleCall={this.handleCall}
         />
       </div>
     );
