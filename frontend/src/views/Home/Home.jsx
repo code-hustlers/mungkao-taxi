@@ -32,7 +32,7 @@ const Div = styled.div`
     background: black;
     color: #fff;
   };
-  ${props => props.driverID === props.id ?
+  ${props => props.userID === props.id ?
     `background: black;
     color: #fff;`
   : null}
@@ -42,13 +42,13 @@ const FullpageWrapper = (props) => (
   <ReactFullpage
     {...fullpageProps}
     render = {({ state, fullpageApi }) => {
-      const { userInfo, drivers, handleSelectDriver, driverID, handleCall } = props;
-      // console.log({userInfo}, {drivers});
+      const { userInfo, drivers, handleSelectUser, userID, handleClick } = props;
+      console.log({userInfo}, {drivers});
 
       const driverElem = drivers.map(el => {
         return(el.status === 0 ?
           <CardForm key={el.id} >
-            <Div onClick={handleSelectDriver(el.id)} driverID={driverID} id={el.id}>
+            <Div onClick={handleSelectUser(el.id)} userID={userID} id={el.id}>
               <h2>{el.id}</h2>
               <span>{el.name}</span>
               <span>{el.date}</span><br/>
@@ -56,6 +56,12 @@ const FullpageWrapper = (props) => (
           </CardForm>
           : null);
       });
+
+      const callElem = (
+        <CardForm>
+          call list
+        </CardForm>
+      );
 
       return(
         <ReactFullpage.Wrapper>
@@ -66,17 +72,25 @@ const FullpageWrapper = (props) => (
           </div>
           <div className="section">
             <div>
-              <Title>마음에 드는 운전자를 선택하세요:D</Title>
-              {driverElem}
-              {!userInfo.position || userInfo.position === 0 ?
-                (<Button onClick={handleCall} style={{width:'80%'}} >
-                  call
-                </Button>)
-                :
-                (<Button>
-                  approval
-                </Button>)
-              }
+
+              {!userInfo.position || userInfo.position === 0 ? (
+                <div>
+                  <Title>마음에 드는 운전자를 선택하세요:D</Title>
+                  {driverElem}
+                  <Button onClick={handleClick} style={{width:'80%'}} >
+                    call
+                  </Button>
+                </div>
+                ) : (
+                <div>
+                  <Title>당신이 요청받은 콜 리스트 입니다:D</Title>
+                  {callElem}
+                  <Button onClick={handleClick} style={{width:'80%'}} >
+                    approval
+                  </Button>
+                </div>
+              )}
+
             </div>
           </div>
         </ReactFullpage.Wrapper>
@@ -89,7 +103,7 @@ class Home extends React.Component {
   state = {
     userInfo: {},
     drivers: [],
-    driverID: '',
+    userID: '',
   };
 
   componentDidMount() {
@@ -135,28 +149,27 @@ class Home extends React.Component {
       });
   }
 
-  handleSelectDriver = driverID => () => {
-    this.setState({ driverID });
+  handleSelectUser = userID => () => {
+    this.setState({ userID });
   }
 
-  handleCall = () => {
-    const { driverID } = this.state;
+  handleClick = () => {
+    const { userID, userInfo } = this.state;
+    console.log(userInfo.position);
 
-    if(driverID === '') {
-      alert('운전자를 선택하여 주십시오.');
-    }else if(window.confirm(`${driverID}님에게 호출을 요청하시겠습니까 ?`)) {
+    let userType = userInfo.position === 0 || !userInfo.position ? `운전자` : `탑승자`;
+    let confirmMsg = userInfo.position === 0 || !userInfo.position ? `${userID}님에게 호출을 요청하시겠습니까 ?` : `${userID}의 요청을 승낙 하시겠습니까 ?`;
+    if(userID === '') {
+      alert(`${userType}를 선택하여 주십시오.`);
+    }else if(window.confirm(confirmMsg)) {
       // message call
     }else {
-      this.setState({ driverID: '' });
+      this.setState({ userID: '' });
     }
   }
 
-  handleApproval = () => {
-    
-  }
-
   render() {
-    const { userInfo, drivers, driverID } = this.state;
+    const { userInfo, drivers, userID } = this.state;
     // console.log('render drivers : ', drivers);
 
     return (
@@ -164,9 +177,9 @@ class Home extends React.Component {
         <FullpageWrapper
           userInfo={userInfo}
           drivers={drivers}
-          handleSelectDriver={this.handleSelectDriver}
-          driverID={driverID}
-          handleCall={this.handleCall}
+          userID={userID}
+          handleSelectUser={this.handleSelectUser}
+          handleClick={this.handleClick}
         />
       </div>
     );
