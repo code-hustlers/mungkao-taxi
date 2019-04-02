@@ -10,6 +10,25 @@ import { StoreConsumer } from "../store/Store";
 import SignoutButton from "../components/SignoutButton";
 import { withCookies } from "react-cookie";
 import withStore from "../lib/withStore";
+import styled from 'styled-components';
+
+const Nav = styled.nav`
+  position: absolute;
+  width: 100%;
+  height: 10%;
+  background-color: #fd79a8;
+  z-index: 1;
+`;
+
+const Div = styled.div`
+  float: left;
+  padding: 1rem;
+`;
+
+const LogoImg = styled.img.attrs({ src: '/mungkao-taxi-logo.png' })`
+  width: 20px;
+  height: 20px;
+`;
 
 class AppRouter extends React.Component {
   handleSignout = () => {
@@ -33,24 +52,25 @@ class AppRouter extends React.Component {
           return (
             <Router>
               <>
-                <nav>
-                  <ul>
-                    <li>
+                <Nav>
+                    <Div>
+                      <LogoImg />
+                    </Div>
+                    <Div>
                       <Link to="/">Home</Link>
-                    </li>
-                    <li>
+                    </Div>
+                    <Div>
                       <Link to="/signin/">Signin</Link>
-                    </li>
-                    <li>
+                    </Div>
+                    <Div>
                       <Link to="/signup/">Signup</Link>
-                    </li>
-                  </ul>
+                    </Div>
                   {isSignin ? (
                     <SignoutButton onClick={handleSignout}>
                       Signout
                     </SignoutButton>
                   ) : null}
-                </nav>
+                </Nav>
 
                 <Route
                   exact

@@ -77,17 +77,21 @@ const FullpageWrapper = (props) => (
                 <div>
                   <Title>마음에 드는 운전자를 선택하세요:D</Title>
                   {driverElem}
-                  <Button onClick={handleClick} style={{width:'80%'}} >
-                    call
-                  </Button>
+                  <CardForm>
+                    <Button onClick={handleClick}>
+                      call
+                    </Button>
+                  </CardForm>
                 </div>
                 ) : (
                 <div>
                   <Title>당신이 요청받은 콜 리스트 입니다:D</Title>
                   {callElem}
-                  <Button onClick={handleClick} style={{width:'80%'}} >
-                    approval
-                  </Button>
+                  <CardForm>
+                    <Button onClick={handleClick}>
+                      approval
+                    </Button>
+                  </CardForm>
                 </div>
               )}
 
