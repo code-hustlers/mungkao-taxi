@@ -110,10 +110,15 @@ class Home extends React.Component {
     userID: '',
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     const { handleCheck, handleGetDriver } = this;
-    handleCheck();
-    handleGetDriver();
+    await handleCheck();
+    console.log(this.state.userInfo);
+    if(!this.state.userInfo.position || this.state.userInfo.position === 0) {
+      await handleGetDriver();
+    }else {
+      // get call list ajax
+    }
   }
 
   handleCheck = async () => {
