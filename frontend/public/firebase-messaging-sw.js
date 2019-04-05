@@ -1,3 +1,5 @@
+/* eslint-disable no-restricted-globals */
+/* eslint-disable no-undef */
 // Give the service worker access to Firebase Messaging.
 // Note that you can only use Firebase Messaging here, other Firebase libraries
 // are not available in the service worker.
@@ -39,4 +41,24 @@ messaging.setBackgroundMessageHandler(function(payload) {
     notificationTitle,
     notificationOptions
   );
+});
+
+// Push Noti
+self.addEventListener("install", e => {
+  console.log("Installed My Service Worker!");
+});
+
+self.addEventListener("push", function(event) {
+  console.log("[Service Worker] Push Received.");
+  console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
+
+  const title = "Push Codelab";
+  const options = {
+    // body: "Yay it works.",
+    body: event.data.text(),
+    icon: "images/icon.png",
+    badge: "images/badge.png"
+  };
+
+  event.waitUntil(self.registration.showNotification(title, options));
 });
