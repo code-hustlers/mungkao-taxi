@@ -3,45 +3,47 @@
 // Give the service worker access to Firebase Messaging.
 // Note that you can only use Firebase Messaging here, other Firebase libraries
 // are not available in the service worker.
-importScripts("https://www.gstatic.com/firebasejs/4.8.1/firebase-app.js");
-importScripts("https://www.gstatic.com/firebasejs/4.8.1/firebase-messaging.js");
+console.log("firebase-messaing-sw.js");
+// 아래 에러난 코드 제거하면 푸시 로그 출력됨
+// importScripts("https://www.gstatic.com/firebasejs/4.8.1/firebase-app.js");
+// importScripts("https://www.gstatic.com/firebasejs/4.8.1/firebase-messaging.js");
 
-// Initialize the Firebase app in the service worker by passing in the
-// messagingSenderId.
-firebase.initializeApp({
-  messagingSenderId: "760674505097"
-});
+// // Initialize the Firebase app in the service worker by passing in the
+// // messagingSenderId.
+// firebase.initializeApp({
+//   messagingSenderId: "760674505097"
+// });
 
-// Retrieve an instance of Firebase Messaging so that it can handle background
-// messages.
-const messaging = firebase.messaging();
+// // Retrieve an instance of Firebase Messaging so that it can handle background
+// // messages.
+// const messaging = firebase.messaging();
 
-// Handle incoming messages. Called when:
-// - a message is received while the app has focus
-// - the user clicks on an app notification created by a service worker
-//   `messaging.setBackgroundMessageHandler` handler.
-messaging.onMessage(function(payload) {
-  console.log("Message received. ", payload);
-  // ...
-});
+// // Handle incoming messages. Called when:
+// // - a message is received while the app has focus
+// // - the user clicks on an app notification created by a service worker
+// //   `messaging.setBackgroundMessageHandler` handler.
+// messaging.onMessage(function(payload) {
+//   console.log("Message received. ", payload);
+//   // ...
+// });
 
-messaging.setBackgroundMessageHandler(function(payload) {
-  console.log(
-    "[firebase-messaging-sw.js] Received background message ",
-    payload
-  );
-  // Customize notification here
-  var notificationTitle = "Background Message Title";
-  var notificationOptions = {
-    body: "Background Message body.",
-    icon: "/firebase-logo.png"
-  };
+// messaging.setBackgroundMessageHandler(function(payload) {
+//   console.log(
+//     "[firebase-messaging-sw.js] Received background message ",
+//     payload
+//   );
+//   // Customize notification here
+//   var notificationTitle = "Background Message Title";
+//   var notificationOptions = {
+//     body: "Background Message body.",
+//     icon: "/firebase-logo.png"
+//   };
 
-  return self.registration.showNotification(
-    notificationTitle,
-    notificationOptions
-  );
-});
+//   return self.registration.showNotification(
+//     notificationTitle,
+//     notificationOptions
+//   );
+// });
 
 // Push Noti
 self.addEventListener("install", e => {
@@ -52,12 +54,12 @@ self.addEventListener("push", function(event) {
   console.log("[Service Worker] Push Received.");
   console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
 
-  const title = "Push Codelab";
+  const title = "멍카오택시 푸시 테스트";
   const options = {
     // body: "Yay it works.",
     body: event.data.text(),
-    icon: "images/icon.png",
-    badge: "images/badge.png"
+    icon: "/mungkao-taxi-logo.png",
+    badge: "/mungkao-taxi-logo.png"
   };
 
   event.waitUntil(self.registration.showNotification(title, options));
