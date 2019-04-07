@@ -90,15 +90,6 @@ class Signin extends React.Component {
         )
         .then(res => res)
         .catch(error => console.error(error));
-      // axios.post({
-      //   method: "POST",
-      //   url: `${process.env.REACT_APP_SERVER_URL}:${
-      //     process.env.REACT_APP_SERVER_PORT
-      //   }/push`,
-      //   data: {
-      //     subscription: subscribeUser()
-      //   }
-      // });
     } catch (error) {
       console.error(error);
     } finally {
