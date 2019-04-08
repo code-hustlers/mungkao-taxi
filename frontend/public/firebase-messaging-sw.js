@@ -4,46 +4,46 @@
 // Note that you can only use Firebase Messaging here, other Firebase libraries
 // are not available in the service worker.
 console.log("firebase-messaing-sw.js");
-// 아래 에러난 코드 제거하면 푸시 로그 출력됨
-// importScripts("https://www.gstatic.com/firebasejs/4.8.1/firebase-app.js");
-// importScripts("https://www.gstatic.com/firebasejs/4.8.1/firebase-messaging.js");
+importScripts("https://www.gstatic.com/firebasejs/4.8.1/firebase-app.js");
+importScripts("https://www.gstatic.com/firebasejs/4.8.1/firebase-messaging.js");
 
-// // Initialize the Firebase app in the service worker by passing in the
-// // messagingSenderId.
-// firebase.initializeApp({
-//   messagingSenderId: "760674505097"
-// });
+// Initialize the Firebase app in the service worker by passing in the
+// messagingSenderId.
+firebase.initializeApp({
+  messagingSenderId: "760674505097"
+});
 
-// // Retrieve an instance of Firebase Messaging so that it can handle background
-// // messages.
-// const messaging = firebase.messaging();
+// Retrieve an instance of Firebase Messaging so that it can handle background
+// messages.
+const messaging = firebase.messaging();
 
-// // Handle incoming messages. Called when:
-// // - a message is received while the app has focus
-// // - the user clicks on an app notification created by a service worker
-// //   `messaging.setBackgroundMessageHandler` handler.
+// 아래 코드는 service worker말고 다른 js에서 호출해야함 여기서 호출하면 에러
+// Handle incoming messages. Called when:
+// - a message is received while the app has focus
+// - the user clicks on an app notification created by a service worker
+//   `messaging.setBackgroundMessageHandler` handler.
 // messaging.onMessage(function(payload) {
 //   console.log("Message received. ", payload);
 //   // ...
 // });
 
-// messaging.setBackgroundMessageHandler(function(payload) {
-//   console.log(
-//     "[firebase-messaging-sw.js] Received background message ",
-//     payload
-//   );
-//   // Customize notification here
-//   var notificationTitle = "Background Message Title";
-//   var notificationOptions = {
-//     body: "Background Message body.",
-//     icon: "/firebase-logo.png"
-//   };
+messaging.setBackgroundMessageHandler(function(payload) {
+  console.log(
+    "[firebase-messaging-sw.js] Received background message ",
+    payload
+  );
+  // Customize notification here
+  var notificationTitle = "Background Message Title";
+  var notificationOptions = {
+    body: "Background Message body.",
+    icon: "/firebase-logo.png"
+  };
 
-//   return self.registration.showNotification(
-//     notificationTitle,
-//     notificationOptions
-//   );
-// });
+  return self.registration.showNotification(
+    notificationTitle,
+    notificationOptions
+  );
+});
 
 // Push Noti
 self.addEventListener("install", e => {
