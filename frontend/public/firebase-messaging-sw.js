@@ -22,10 +22,6 @@ const messaging = firebase.messaging();
 // - a message is received while the app has focus
 // - the user clicks on an app notification created by a service worker
 //   `messaging.setBackgroundMessageHandler` handler.
-// messaging.onMessage(function(payload) {
-//   console.log("Message received. ", payload);
-//   // ...
-// });
 
 messaging.setBackgroundMessageHandler(function(payload) {
   console.log(
@@ -46,21 +42,21 @@ messaging.setBackgroundMessageHandler(function(payload) {
 });
 
 // Push Noti
-self.addEventListener("install", e => {
-  console.log("Installed My Service Worker!");
-});
+// self.addEventListener("install", e => {
+//   console.log("Installed My Service Worker!");
+// });
 
-self.addEventListener("push", function(event) {
-  console.log("[Service Worker] Push Received.");
-  console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
+// self.addEventListener("push", function(event) {
+//   console.log("[Service Worker] Push Received.");
+//   console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
 
-  const title = "멍카오택시 푸시 테스트";
-  const options = {
-    // body: "Yay it works.",
-    body: event.data.text(),
-    icon: "/mungkao-taxi-logo.png",
-    badge: "/mungkao-taxi-logo.png"
-  };
+//   const title = "멍카오택시 푸시 테스트";
+//   const options = {
+//     // body: "Yay it works.",
+//     body: event.data.text(),
+//     icon: "/mungkao-taxi-logo.png",
+//     badge: "/mungkao-taxi-logo.png"
+//   };
 
-  event.waitUntil(self.registration.showNotification(title, options));
-});
+//   event.waitUntil(self.registration.showNotification(title, options));
+// });
