@@ -21,7 +21,8 @@ export const init = async () => {
   requestPermission(messaging);
   const token = await searchCurrentRegisteredToken(messaging);
   console.log("TCL: init -> token", token);
-  monitoringRefreshToken(messaging);
+  const refreshedToken = await monitoringRefreshToken(messaging);
+  console.log("TCL: init -> refreshedToken", refreshedToken);
   onMessageForeGround(messaging);
 };
 
@@ -40,56 +41,58 @@ export const requestPermission = messaging => {
 
 export const searchCurrentRegisteredToken = (_messaging = messaging) => {
   return new Promise((resolve, reject) => {
-    _messaging.onTokenRefresh(() => {
-      // Get Instance ID token. Initially this makes a network call, once retrieved
-      // subsequent calls to getToken will return from cache.
-      _messaging
-        .getToken()
-        .then(function(currentToken) {
-          if (currentToken) {
-            // console.log("TCL: currentToken", currentToken);
-            resolve(currentToken);
-            // sendTokenToServer(currentToken);
-            // updateUIForPushEnabled(currentToken);
-          } else {
-            // Show permission request.
-            console.log(
-              "No Instance ID token available. Request permission to generate one."
-            );
-            // Show permission UI.
-            // updateUIForPushPermissionRequired();
-            // setTokenSentToServer(false);
-          }
-        })
-        .catch(function(err) {
-          console.log("An error occurred while retrieving token. ", err);
-          reject(err);
-          // showToken("Error retrieving Instance ID token. ", err);
+    // Get Instance ID token. Initially this makes a network call, once retrieved
+    // subsequent calls to getToken will return from cache.
+    _messaging
+      .getToken()
+      .then(function(currentToken) {
+        if (currentToken) {
+          // console.log("TCL: currentToken", currentToken);
+          resolve(currentToken);
+          // sendTokenToServer(currentToken);
+          // updateUIForPushEnabled(currentToken);
+        } else {
+          // Show permission request.
+          console.log(
+            "No Instance ID token available. Request permission to generate one."
+          );
+          // Show permission UI.
+          // updateUIForPushPermissionRequired();
           // setTokenSentToServer(false);
-        });
-    });
+        }
+      })
+      .catch(function(err) {
+        console.log("An error occurred while retrieving token. ", err);
+        reject(err);
+        // showToken("Error retrieving Instance ID token. ", err);
+        // setTokenSentToServer(false);
+      });
   });
 };
 
-export const monitoringRefreshToken = messaging => {
-  // Callback fired if Instance ID token is updated.
-  messaging.onTokenRefresh(function() {
-    messaging
-      .getToken()
-      .then(function(refreshedToken) {
-        console.log("TCL: refreshedToken", refreshedToken);
-        console.log("Token refreshed.");
-        // Indicate that the new Instance ID token has not yet been sent to the
-        // app server.
-        // setTokenSentToServer(false);
-        // Send Instance ID token to app server.
-        // sendTokenToServer(refreshedToken);
-        // ...
-      })
-      .catch(function(err) {
-        console.log("Unable to retrieve refreshed token ", err);
-        // showToken("Unable to retrieve refreshed token ", err);
-      });
+export const monitoringRefreshToken = async messaging => {
+  return new Promise((resolve, reject) => {
+    // Callback fired if Instance ID token is updated.
+    messaging.onTokenRefresh(function() {
+      messaging
+        .getToken()
+        .then(function(refreshedToken) {
+          console.log("TCL: refreshedToken", refreshedToken);
+          resolve(refreshedToken);
+          console.log("Token refreshed.");
+          // Indicate that the new Instance ID token has not yet been sent to the
+          // app server.
+          // setTokenSentToServer(false);
+          // Send Instance ID token to app server.
+          // sendTokenToServer(refreshedToken);
+          // ...
+        })
+        .catch(function(err) {
+          console.log("Unable to retrieve refreshed token ", err);
+          reject(err);
+          // showToken("Unable to retrieve refreshed token ", err);
+        });
+    });
   });
 };
 
