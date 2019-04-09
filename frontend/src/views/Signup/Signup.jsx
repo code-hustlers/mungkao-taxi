@@ -11,6 +11,7 @@ const Container = styled.div`
   display: flex;
   flex-flow: column wrap;
   padding: 0.5rem;
+  margin: auto 0;
 `;
 
 function Signup(props) {
