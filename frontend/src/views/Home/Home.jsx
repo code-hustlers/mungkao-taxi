@@ -199,11 +199,6 @@ class Home extends React.Component {
       }
       await this.setState({ userID: '' });
     }
-    // else if(window.confirm(confirmMsg)) {
-    //   // message call
-    // }else {
-    //   this.setState({ userID: '' });
-    // }
   }
 
   render() {
