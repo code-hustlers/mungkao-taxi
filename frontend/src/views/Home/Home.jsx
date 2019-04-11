@@ -5,21 +5,21 @@ import { withRouter } from "react-router-dom";
 import withStore from "../../lib/withStore";
 import Button from "../../components/Button";
 // fullpage
-import ReactFullpage from '@fullpage/react-fullpage';
-import 'fullpage.js/vendors/scrolloverflow';
+import ReactFullpage from "@fullpage/react-fullpage";
+import "fullpage.js/vendors/scrolloverflow";
 import { CardForm } from "../../components/Card/CardForm";
-import styled from 'styled-components';
+import styled from "styled-components";
 import { searchCurrentRegisteredToken } from "../../lib/newFCM";
 
 const fullpageProps = {
   scrollOverflow: true,
-  sectionsColor: ['#fff', '#fff'],
-  anchors: ['overview', 'actions']
-}
+  sectionsColor: ["#fff", "#fff"],
+  anchors: ["overview", "actions"]
+};
 const fcmTest = async () => {
   const token = await searchCurrentRegisteredToken();
   console.log("TCL: fcmTest -> token", token);
-}
+};
 
 const Title = styled.div`
   text-align: center;
@@ -31,39 +31,43 @@ const Div = styled.div`
   &:hover {
     background: black;
     color: #fff;
-  };
-  ${props => props.userID === props.id ?
-    `background: black;
+  }
+  ${props =>
+    props.userID === props.id
+      ? `background: black;
     color: #fff;`
-  : null}
+      : null}
 `;
 
-const FullpageWrapper = (props) => (
+const FullpageWrapper = React.memo(props => (
   <ReactFullpage
     {...fullpageProps}
-    render = {({ state, fullpageApi }) => {
-      const { userInfo, drivers, handleSelectUser, userID, handleClick } = props;
-      console.log({userInfo}, {drivers});
+    render={({ state, fullpageApi }) => {
+      const {
+        userInfo,
+        drivers,
+        handleSelectUser,
+        userID,
+        handleClick
+      } = props;
+      console.log({ userInfo }, { drivers });
 
       const driverElem = drivers.map(el => {
-        return(el.status === 0 ?
-          <CardForm key={el.id} >
+        return el.status === 0 ? (
+          <CardForm key={el.id}>
             <Div onClick={handleSelectUser(el.id)} userID={userID} id={el.id}>
               <h2>{el.id}</h2>
               <span>{el.name}</span>
-              <span>{el.date}</span><br/>
+              <span>{el.date}</span>
+              <br />
             </Div>
           </CardForm>
-          : null);
+        ) : null;
       });
 
-      const callElem = (
-        <CardForm>
-          call list
-        </CardForm>
-      );
+      const callElem = <CardForm>call list</CardForm>;
 
-      return(
+      return (
         <ReactFullpage.Wrapper>
           <div className="section">
             <span style={{ color: "#8e44ad" }}>{userInfo.id}</span>
@@ -72,51 +76,45 @@ const FullpageWrapper = (props) => (
           </div>
           <div className="section">
             <div>
-
               {!userInfo.position || userInfo.position === 0 ? (
                 <div>
                   <Title>마음에 드는 운전자를 선택하세요:D</Title>
                   {driverElem}
                   <CardForm>
-                    <Button onClick={handleClick}>
-                      call
-                    </Button>
+                    <Button onClick={handleClick}>call</Button>
                   </CardForm>
                 </div>
-                ) : (
+              ) : (
                 <div>
                   <Title>당신이 요청받은 콜 리스트 입니다:D</Title>
                   {callElem}
                   <CardForm>
-                    <Button onClick={handleClick}>
-                      approval
-                    </Button>
+                    <Button onClick={handleClick}>approval</Button>
                   </CardForm>
                 </div>
               )}
-
             </div>
           </div>
         </ReactFullpage.Wrapper>
       );
     }}
   />
-);
+));
 
 class Home extends React.Component {
   state = {
     userInfo: {},
     drivers: [],
-    userID: '',
+    userID: ""
   };
 
   async componentDidMount() {
     const { handleCheck, handleGetDriver } = this;
     await handleCheck();
     console.log(this.state.userInfo);
-    if(!this.state.userInfo.position || this.state.userInfo.position === 0) {
+    if (!this.state.userInfo.position || this.state.userInfo.position === 0) {
       await handleGetDriver();
-    }else {
+    } else {
       // get call list ajax
     }
   }
@@ -148,58 +146,70 @@ class Home extends React.Component {
   };
 
   handleGetDriver = async () => {
-      await axios({
-        method: 'get',
-        url: `${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/apis/v1/driver/list`
-      }).then(res => {
+    await axios({
+      method: "get",
+      url: `${process.env.REACT_APP_SERVER_URL}:${
+        process.env.REACT_APP_SERVER_PORT
+      }/apis/v1/driver/list`
+    })
+      .then(res => {
         this.setState({ drivers: res.data });
-      }).catch(err => {
-        console.log(err, 'error');
+      })
+      .catch(err => {
+        console.log(err, "error");
       });
-  }
+  };
 
   handleCall = () => {
     const { userID, userInfo } = this.state;
 
     const data = {
-      driverId : userID,
+      driverId: userID,
       userId: userInfo.id,
-      sPoint: '',
-      destination: '',
-      price: 0,
+      sPoint: "",
+      destination: "",
+      price: 0
     };
 
     return axios({
-      method: 'post',
-      url: `${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/apis/v1/call/request`,
+      method: "post",
+      url: `${process.env.REACT_APP_SERVER_URL}:${
+        process.env.REACT_APP_SERVER_PORT
+      }/apis/v1/call/request`,
       data: data
-    }).then(res => {
-      console.log('call API success : ', res);
-    }).catch(err => {
-      console.log('call API failure : ', err);
-    });
-  }
+    })
+      .then(res => {
+        console.log("call API success : ", res);
+      })
+      .catch(err => {
+        console.log("call API failure : ", err);
+      });
+  };
 
   handleSelectUser = userID => () => {
     this.setState({ userID });
-  }
+  };
 
   handleClick = async () => {
     const { userID, userInfo } = this.state;
     const { handleCall } = this;
     console.log(userInfo.position);
 
-    let userType = userInfo.position === 0 || !userInfo.position ? `운전자` : `탑승자`;
-    let confirmMsg = userInfo.position === 0 || !userInfo.position ? `${userID}님에게 호출을 요청하시겠습니까 ?` : `${userID}의 요청을 승낙 하시겠습니까 ?`;
-    if(userID === '') {
+    let userType =
+      userInfo.position === 0 || !userInfo.position ? `운전자` : `탑승자`;
+    let confirmMsg =
+      userInfo.position === 0 || !userInfo.position
+        ? `${userID}님에게 호출을 요청하시겠습니까 ?`
+        : `${userID}의 요청을 승낙 하시겠습니까 ?`;
+    if (userID === "") {
       alert(`${userType}를 선택하여 주십시오.`);
-    }else {
-      if(window.confirm(confirmMsg)) {
+    } else {
+      if (window.confirm(confirmMsg)) {
         await handleCall();
       }
-      await this.setState({ userID: '' });
+      await this.setState({ userID: "" });
     }
-  }
+  };
 
   render() {
     const { userInfo, drivers, userID } = this.state;
