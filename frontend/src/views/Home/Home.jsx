@@ -158,23 +158,52 @@ class Home extends React.Component {
       });
   }
 
+  handleCall = () => {
+    const { userID, userInfo } = this.state;
+
+    const data = {
+      driverId : userID,
+      userId: userInfo.id,
+      sPoint: '',
+      destination: '',
+      price: 0,
+    };
+
+    return axios({
+      method: 'post',
+      url: `${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/apis/v1/call/request`,
+      data: data
+    }).then(res => {
+      console.log('call API success : ', res);
+    }).catch(err => {
+      console.log('call API failure : ', err);
+    });
+  }
+
   handleSelectUser = userID => () => {
     this.setState({ userID });
   }
 
-  handleClick = () => {
+  handleClick = async () => {
     const { userID, userInfo } = this.state;
+    const { handleCall } = this;
     console.log(userInfo.position);
 
     let userType = userInfo.position === 0 || !userInfo.position ? `운전자` : `탑승자`;
     let confirmMsg = userInfo.position === 0 || !userInfo.position ? `${userID}님에게 호출을 요청하시겠습니까 ?` : `${userID}의 요청을 승낙 하시겠습니까 ?`;
     if(userID === '') {
       alert(`${userType}를 선택하여 주십시오.`);
-    }else if(window.confirm(confirmMsg)) {
-      // message call
     }else {
-      this.setState({ userID: '' });
+      if(window.confirm(confirmMsg)) {
+        await handleCall();
+      }
+      await this.setState({ userID: '' });
     }
+    // else if(window.confirm(confirmMsg)) {
+    //   // message call
+    // }else {
+    //   this.setState({ userID: '' });
+    // }
   }
 
   render() {

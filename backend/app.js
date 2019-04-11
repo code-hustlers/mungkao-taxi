@@ -80,9 +80,10 @@ mongoose
 
 // model import
 const User = require("./models/user");
+const Call = require("./models/call");
 
 // Routes
-require("./routes")(app, jwt, User);
+require("./routes")(app, jwt, User, Call);
 require("./routes/push")(app);
 
 app.listen(port, () => {

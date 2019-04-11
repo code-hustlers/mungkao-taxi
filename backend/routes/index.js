@@ -1,6 +1,34 @@
 const DEFAULT_API = "/apis/v1";
-module.exports = (app, jwt, User) => {
+module.exports = (app, jwt, User, Call) => {
   // API LIST
+
+  // POST Insert call info
+  app.post(`${DEFAULT_API}/call/request`, (req, res) => {
+    console.log(`API: ${DEFAULT_API}/call/request =============== ${req.body} :::::`);
+
+    const call = new Call({
+      driverId: req.body.driverId,
+      userId: req.body.userId,
+      sPoint: req.body.sPoint,
+      destination: req.body.destination,
+      price: req.body.price,
+      call_date: new Date(),
+      status: 0 // 0 대기, 1 승인, 2 거절
+    });
+
+    console.log('===================================================================');
+    console.log(call);
+    console.log('===================================================================');
+
+    call.save(err => {
+      console.log(err);
+      if(err) {
+        res.status(401).json({ result:0, msg:'에러낫오용' });
+      }
+      res.status(200).json({ result:1, msg:'요청갓오용' });
+    });
+    
+  });
 
   // GET driver info
   app.get(`${DEFAULT_API}/driver/list`, (req, res) => {
