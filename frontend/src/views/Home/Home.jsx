@@ -68,7 +68,7 @@ const FullpageWrapper = (props) => (
         }
         return (
           <CardForm key={idx}>
-            <Div onClick={handleSelectUser(el.id)} userID={userID} id={el.id}>
+            <Div onClick={handleSelectUser(el.userId)} userID={userID} id={el.userId}>
               <h2>{el.userId}</h2>
               <p>{`${el.sPoint} ~ ${el.destination}`}</p>
               <p>{el.price <= 0 ? '꽁짜' : el.price}</p>
@@ -190,7 +190,7 @@ class Home extends React.Component {
     });
   }
 
-  handleCallRequest = () => {
+  handleCallRequest = async () => {
     const { userID, userInfo } = this.state;
 
     const data = {
@@ -201,7 +201,7 @@ class Home extends React.Component {
       price: 0,
     };
 
-    return axios({
+    await axios({
       method: 'post',
       url: `${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/apis/v1/call/request`,
       data: data
@@ -210,6 +210,8 @@ class Home extends React.Component {
     }).catch(err => {
       console.log('call API failure : ', err);
     });
+
+    await this.setState({ userID: '' });
   }
 
   handleSelectUser = userID => () => {
@@ -218,7 +220,7 @@ class Home extends React.Component {
 
   handleClick = async (e) => {
     const { userID, userInfo } = this.state;
-    const { handleCallRequest, handleAproval } = this;
+    const { handleCallRequest, handleApproval } = this;
     // console.log(userInfo.position);
     e.preventDefault();
 
@@ -230,21 +232,39 @@ class Home extends React.Component {
     }
 
     if(window.confirm(confirmMsg)) {
-      userType === '운전자' ? await handleCallRequest() : await handleAproval();
+      userType === '운전자' ? await handleCallRequest() : await handleApproval();
     }
+  }
 
+  handleApproval = async (e) => {
+    const { userID, userInfo } = this.state;
+    // console.log(userID, userInfo.id);
+    const data = {
+      driverId: userInfo.id,
+      userId: userID
+    };
+    
+    await axios({
+      method: 'put',
+      url: `${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/apis/v1/call/approval`,
+      data: data
+    }).then(res => {
+      console.log(res);
+    }).catch(err => {
+      console.log(err);
+    });
+    await this.handleCallList();
     await this.setState({ userID: '' });
   }
 
-  handleAproval = async (e) => {
-    const { userID } = this.state;
-
-    // aproval api
-  }
-
   handleReject = async (e) => {
-    const { userID } = this.state;
+    const { userID, userInfo } = this.state;
     e.preventDefault();
+
+    const data = {
+      driverId: userInfo.id,
+      userId: userID
+    };
 
     if(userID === '') {
       alert(`탑승자를 선택하여 주십시오.`);
@@ -253,6 +273,16 @@ class Home extends React.Component {
 
     if(window.confirm(`${userID}의 요청을 거절 하시겠습니까?`)) {
       // reject api
+      await axios({
+        method: 'put',
+        url: `${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/apis/v1/call/reject`,
+        data: data
+      }).then(res => {
+        console.log(res);
+      }).catch(err => {
+        console.log(err);
+      });
+      await this.handleCallList();
     }
 
     await this.setState({ userID: '' });

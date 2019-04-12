@@ -2,6 +2,36 @@ const DEFAULT_API = "/apis/v1";
 module.exports = (app, jwt, User, Call) => {
   // API LIST
 
+  // PUT call approval
+  app.put(`${DEFAULT_API}/call/approval`, async (req, res) => {
+    // driver user status : 0 => 1
+    // passenger user status : 0 => 1
+    // call schema status : 0 => 1
+    try { 
+      await User.update({ id: req.body.driverId }, { status: 1 });
+      await User.update({ id: req.body.userId }, { status: 1 });
+      await Call.update({ driverId: req.body.driverId, userId: req.body.userId }, { status: 1 });
+      await res.status(200).json({ result:1, msg:'매칭 완료 HooHoo ~' });
+    } catch (error) {
+      console.log('call/approval : ', error);
+      await res.status(401).json({ result:0, msg:'매칭 실패 FUCK...' });
+    }
+  });
+
+  // PUT call reject
+  app.put(`${DEFAULT_API}/call/reject`, async (req, res) => {
+    // driver user status : 0 => 0
+    // passenger user status : 0 => 0
+    // call schema status : 0 => 2
+    try {
+      await Call.update({ driverId: req.body.driverId, userId: req.body.userId }, { status: 2 });
+      await res.status(200).json({ result:1, msg:'거절 완료 HooHoo' });
+    } catch (error) {
+      console.log('call/reject : ', error);
+      await res.status(401).json({ result:0, msg:'거절 실패 FUCK...' });
+    }
+  });
+
   // GET call list
   app.post(`${DEFAULT_API}/call/list`, (req, res) => {
     console.log("calllist req.body.id ===============", req.body.id)
@@ -25,7 +55,7 @@ module.exports = (app, jwt, User, Call) => {
         res.status(401).json({ result:0, msg:'다시시도해주세용' });
       }
     });
-  })
+  });
 
   // POST Insert call info
   app.post(`${DEFAULT_API}/call/request`, (req, res) => {
@@ -35,7 +65,7 @@ module.exports = (app, jwt, User, Call) => {
       if(err) throw err;
       // console.log('data =============', data, 'err ======================', err);
       if(data.length === 1) {
-        
+
         Call.find({ driverId: req.body.driverId, userId: req.body.userId }, async (err, data) => {
           if(err) throw err;
           console.log('data =============', data, 'err ======================', err);
