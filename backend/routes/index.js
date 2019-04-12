@@ -1,4 +1,8 @@
 const DEFAULT_API = "/apis/v1";
+const moment = require('moment');
+
+const Now = moment().format('YYYY-MM-DD HH:mm:ss');
+
 module.exports = (app, jwt, User, Call) => {
   // API LIST
 
@@ -75,12 +79,12 @@ module.exports = (app, jwt, User, Call) => {
             sPoint: req.body.sPoint,
             destination: req.body.destination,
             price: req.body.price,
-            call_date: new Date(),
+            call_date: Now,
             status: 0 // 0 대기, 1 승인, 2 거절
           });
           if(data.length === 1) {
             console.log('call List update');
-            await Call.update({ driverId: req.body.driverId, userId: req.body.userId }, { sPoint: req.body.sPoint, destination: req.body.destination, price: req.body.price, call_date: new Date() });
+            await Call.updateOne({ driverId: req.body.driverId, userId: req.body.userId }, { sPoint: req.body.sPoint, destination: req.body.destination, price: req.body.price, call_date: Now, status: 0 });
           }else {
             //save
             console.log('call list insert');
@@ -137,7 +141,7 @@ module.exports = (app, jwt, User, Call) => {
       name: req.body.name,
       position: req.body.position,
       status: req.body.status,
-      create_date: new Date()
+      create_date: Now
     });
 
     console.log(`=====================================`);
