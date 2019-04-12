@@ -62,21 +62,22 @@ db.once("open", () => {
 
 mongoose
   .connect(`mongodb+srv://${DB_ID}:${DB_PW}@${DB_URL}/${DB_NAME}`, {
-    useNewUrlParser: true
-  })
-  .then(
-    data => {
-      const state = data.connection._hasOpened;
-      if (!state) {
-        mongoose.connect(`mongodb://${DB_ID}:${DB_PW}@${DB_URL}`, {
-          useNewUrlParser: true
-        });
-      }
-    },
-    err => {
-      console.log(err);
-    }
-  );
+    useNewUrlParser: true,
+    useCreateIndex: true,
+  });
+  // .then(
+  //   data => {
+  //     const state = data.connection._hasOpened;
+  //     if (!state) {
+  //       mongoose.connect(`mongodb://${DB_ID}:${DB_PW}@${DB_URL}`, {
+  //         useNewUrlParser: true
+  //       });
+  //     }
+  //   },
+  //   err => {
+  //     console.log(err);
+  //   }
+  // );
 
 // model import
 const User = require("./models/user");

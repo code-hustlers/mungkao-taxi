@@ -2,37 +2,77 @@ const DEFAULT_API = "/apis/v1";
 module.exports = (app, jwt, User, Call) => {
   // API LIST
 
+  // GET call list
+  app.post(`${DEFAULT_API}/call/list`, (req, res) => {
+    console.log("calllist req.body.id ===============", req.body.id)
+    Call.find({ driverId: req.body.id, status:0 }, (err, calls) => {
+      if(err) throw err;
+      let customCalls = calls.map(call => {
+        return Object.assign({
+          userId: call.userId,
+          sPoint: call.sPoint,
+          destination: call.destination,
+          price: call.price,
+          date: call.call_date
+        });
+      });
+      console.log('call List : ', customCalls);
+
+      try {
+        res.status(200).json(customCalls);
+      } catch (error) {
+        console.log(error);
+        res.status(401).json({ result:0, msg:'다시시도해주세용' });
+      }
+    });
+  })
+
   // POST Insert call info
   app.post(`${DEFAULT_API}/call/request`, (req, res) => {
     console.log(`API: ${DEFAULT_API}/call/request =============== ${req.body} :::::`);
-
-    const call = new Call({
-      driverId: req.body.driverId,
-      userId: req.body.userId,
-      sPoint: req.body.sPoint,
-      destination: req.body.destination,
-      price: req.body.price,
-      call_date: new Date(),
-      status: 0 // 0 대기, 1 승인, 2 거절
-    });
-
-    console.log('===================================================================');
-    console.log(call);
-    console.log('===================================================================');
-
-    call.save(err => {
-      console.log(err);
-      if(err) {
-        res.status(401).json({ result:0, msg:'에러낫오용' });
-      }
-      res.status(200).json({ result:1, msg:'요청갓오용' });
-    });
     
+    User.find({ id: req.body.driverId, status: 0 }, (err, data) => {
+      if(err) throw err;
+      // console.log('data =============', data, 'err ======================', err);
+      if(data.length === 1) {
+        
+        Call.find({ driverId: req.body.driverId, userId: req.body.userId }, async (err, data) => {
+          if(err) throw err;
+          console.log('data =============', data, 'err ======================', err);
+          const call = new Call({
+            driverId: req.body.driverId,
+            userId: req.body.userId,
+            sPoint: req.body.sPoint,
+            destination: req.body.destination,
+            price: req.body.price,
+            call_date: new Date(),
+            status: 0 // 0 대기, 1 승인, 2 거절
+          });
+          if(data.length === 1) {
+            console.log('call List update');
+            await Call.update({ driverId: req.body.driverId, userId: req.body.userId }, { sPoint: req.body.sPoint, destination: req.body.destination, price: req.body.price, call_date: new Date() });
+          }else {
+            //save
+            console.log('call list insert');
+            call.save(err => {
+              console.log(err);
+              if(err) {
+                res.status(401).json({ result:0, msg:'에러낫오용' });
+              }
+              res.status(200).json({ result:1, msg:'요청갓오용' });
+            });
+          }
+        });
+
+      }else {
+        res.status(401).json({ result:0, msg:'운전중이에용' });
+      }
+    });
   });
 
   // GET driver info
   app.get(`${DEFAULT_API}/driver/list`, (req, res) => {
-    User.find({ position: 1 }, (err, dirvers) => {
+    User.find({ position: 1, status:0 }, (err, dirvers) => {
       if(err) throw err;
       // console.log('dirver: ', dirvers);
       let customDrivers = dirvers.map(driver => {

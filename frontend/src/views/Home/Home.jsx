@@ -28,6 +28,8 @@ const Title = styled.div`
 `;
 
 const Div = styled.div`
+  border: 2px solid #eee;
+  padding: 0 3rem;
   &:hover {
     background: black;
     color: #fff;
@@ -42,8 +44,8 @@ const FullpageWrapper = (props) => (
   <ReactFullpage
     {...fullpageProps}
     render = {({ state, fullpageApi }) => {
-      const { userInfo, drivers, handleSelectUser, userID, handleClick } = props;
-      console.log({userInfo}, {drivers});
+      const { userInfo, drivers, handleSelectUser, userID, handleClick, calls, handleReject } = props;
+      console.log({userInfo}, {drivers}, {calls});
 
       const driverElem = drivers.map(el => {
         return(el.status === 0 ?
@@ -57,11 +59,24 @@ const FullpageWrapper = (props) => (
           : null);
       });
 
-      const callElem = (
-        <CardForm>
-          call list
-        </CardForm>
-      );
+      const callElem = calls.map((el, idx) => {
+        if(el.sPoint === '') {
+          el.sPoint = '여기서부터 ';
+        }
+        if(el.destination === '') {
+          el.destination = '저기까지';
+        }
+        return (
+          <CardForm key={idx}>
+            <Div onClick={handleSelectUser(el.id)} userID={userID} id={el.id}>
+              <h2>{el.userId}</h2>
+              <p>{`${el.sPoint} ~ ${el.destination}`}</p>
+              <p>{el.price <= 0 ? '꽁짜' : el.price}</p>
+              <p>{el.date}</p>
+            </Div>
+          </CardForm>
+        )
+      });
 
       return(
         <ReactFullpage.Wrapper>
@@ -87,11 +102,12 @@ const FullpageWrapper = (props) => (
                 <div>
                   <Title>당신이 요청받은 콜 리스트 입니다:D</Title>
                   {callElem}
-                  <CardForm>
-                    <Button onClick={handleClick}>
-                      approval
-                    </Button>
-                  </CardForm>
+                  <Button onClick={handleClick} style={{width:'45%', margin:'auto 2.5%'}}>
+                    Ok
+                  </Button>
+                  <Button onClick={handleReject} style={{width:'45%', margin:'auto 2.5%'}}>
+                    No
+                  </Button>
                 </div>
               )}
 
@@ -107,17 +123,18 @@ class Home extends React.Component {
   state = {
     userInfo: {},
     drivers: [],
+    calls: [],
     userID: '',
   };
 
   async componentDidMount() {
-    const { handleCheck, handleGetDriver } = this;
+    const { handleCheck, handleGetDriver, handleCallList } = this;
     await handleCheck();
     console.log(this.state.userInfo);
     if(!this.state.userInfo.position || this.state.userInfo.position === 0) {
       await handleGetDriver();
     }else {
-      // get call list ajax
+      await handleCallList();
     }
   }
 
@@ -158,7 +175,22 @@ class Home extends React.Component {
       });
   }
 
-  handleCall = () => {
+  handleCallList = async () => {
+    const { userInfo } = this.state;
+
+    await axios({
+      method: 'post',
+      url: `${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/apis/v1/call/list`,
+      data: { id: userInfo.id }
+    }).then(res => {
+      this.setState({ calls: res.data });
+      console.log('call list success : ', res);
+    }).catch(err => {
+      console.log('call list failure : ', err);
+    });
+  }
+
+  handleCallRequest = () => {
     const { userID, userInfo } = this.state;
 
     const data = {
@@ -184,25 +216,50 @@ class Home extends React.Component {
     this.setState({ userID });
   }
 
-  handleClick = async () => {
+  handleClick = async (e) => {
     const { userID, userInfo } = this.state;
-    const { handleCall } = this;
-    console.log(userInfo.position);
+    const { handleCallRequest, handleAproval } = this;
+    // console.log(userInfo.position);
+    e.preventDefault();
 
     let userType = userInfo.position === 0 || !userInfo.position ? `운전자` : `탑승자`;
     let confirmMsg = userInfo.position === 0 || !userInfo.position ? `${userID}님에게 호출을 요청하시겠습니까 ?` : `${userID}의 요청을 승낙 하시겠습니까 ?`;
     if(userID === '') {
       alert(`${userType}를 선택하여 주십시오.`);
-    }else {
-      if(window.confirm(confirmMsg)) {
-        await handleCall();
-      }
-      await this.setState({ userID: '' });
+      return;
     }
+
+    if(window.confirm(confirmMsg)) {
+      userType === '운전자' ? await handleCallRequest() : await handleAproval();
+    }
+
+    await this.setState({ userID: '' });
+  }
+
+  handleAproval = async (e) => {
+    const { userID } = this.state;
+
+    // aproval api
+  }
+
+  handleReject = async (e) => {
+    const { userID } = this.state;
+    e.preventDefault();
+
+    if(userID === '') {
+      alert(`탑승자를 선택하여 주십시오.`);
+      return;
+    }
+
+    if(window.confirm(`${userID}의 요청을 거절 하시겠습니까?`)) {
+      // reject api
+    }
+
+    await this.setState({ userID: '' });
   }
 
   render() {
-    const { userInfo, drivers, userID } = this.state;
+    const { userInfo, drivers, userID, calls } = this.state;
     // console.log('render drivers : ', drivers);
 
     return (
@@ -210,9 +267,11 @@ class Home extends React.Component {
         <FullpageWrapper
           userInfo={userInfo}
           drivers={drivers}
+          calls={calls}
           userID={userID}
           handleSelectUser={this.handleSelectUser}
           handleClick={this.handleClick}
+          handleReject={this.handleReject}
         />
       </div>
     );
