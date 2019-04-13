@@ -14,7 +14,7 @@ export const Div = styled.div`
   color: #fff;
 `;
 
-export const LogoImg = styled.img.attrs({ src: "/mungkao-taxi-logo.png" })`
+export const LogoImg = styled.img`
   width: 20px;
   height: 20px;
 `;

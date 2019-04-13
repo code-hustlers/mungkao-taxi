@@ -13,7 +13,7 @@ const GNB = ({ cookies, isSignin, setSignin }) => {
   return (
     <Nav>
       <Div>
-        <LogoImg />
+        <LogoImg src="/mungkao-taxi-logo.png" />
       </Div>
       <Link to="/">
         <Div>Home</Div>
