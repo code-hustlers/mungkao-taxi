@@ -1,7 +1,5 @@
 const DEFAULT_API = "/apis/v1";
 const moment = require("moment");
-<<<<<<< HEAD
-=======
 const {
   USER_STATUS_READY,
   USER_STATUS_WORK,
@@ -12,7 +10,6 @@ const {
   SERVER_RESULT_FAILURE
 } = require("../constants");
 console.log("TCL: USER_STATUS_READY", USER_STATUS_READY);
->>>>>>> e790a783bf041cbe776ecc38b774ffa5cc601290
 
 const Now = moment().format("YYYY-MM-DD HH:mm:ss");
 
@@ -25,18 +22,6 @@ module.exports = (app, jwt, User, Call) => {
     // passenger user status : 0 => 1
     // call schema status : 0 => 1
     try {
-<<<<<<< HEAD
-      await User.update({ id: req.body.driverId }, { status: 1 });
-      await User.update({ id: req.body.userId }, { status: 1 });
-      await Call.update(
-        { driverId: req.body.driverId, userId: req.body.userId },
-        { status: 1 }
-      );
-      await res.status(200).json({ result: 1, msg: "매칭 완료 HooHoo ~" });
-    } catch (error) {
-      console.log("call/approval : ", error);
-      await res.status(401).json({ result: 0, msg: "매칭 실패 FUCK..." });
-=======
       await User.update(
         { id: req.body.driverId },
         { status: USER_STATUS_WORK }
@@ -54,7 +39,6 @@ module.exports = (app, jwt, User, Call) => {
       await res
         .status(401)
         .json({ result: SERVER_RESULT_FAILURE, msg: "매칭 실패 FUCK..." });
->>>>>>> e790a783bf041cbe776ecc38b774ffa5cc601290
     }
   });
 
@@ -66,14 +50,6 @@ module.exports = (app, jwt, User, Call) => {
     try {
       await Call.update(
         { driverId: req.body.driverId, userId: req.body.userId },
-<<<<<<< HEAD
-        { status: 2 }
-      );
-      await res.status(200).json({ result: 1, msg: "거절 완료 HooHoo" });
-    } catch (error) {
-      console.log("call/reject : ", error);
-      await res.status(401).json({ result: 0, msg: "거절 실패 FUCK..." });
-=======
         { status: CALL_STATUS_REJECT }
       );
       await res
@@ -84,33 +60,12 @@ module.exports = (app, jwt, User, Call) => {
       await res
         .status(401)
         .json({ result: SERVER_RESULT_FAILURE, msg: "거절 실패 FUCK..." });
->>>>>>> e790a783bf041cbe776ecc38b774ffa5cc601290
     }
   });
 
   // GET call list
   app.post(`${DEFAULT_API}/call/list`, (req, res) => {
     console.log("calllist req.body.id ===============", req.body.id);
-<<<<<<< HEAD
-    Call.find({ driverId: req.body.id, status: 0 }, (err, calls) => {
-      if (err) throw err;
-      let customCalls = calls.map(call => {
-        return Object.assign({
-          userId: call.userId,
-          sPoint: call.sPoint,
-          destination: call.destination,
-          price: call.price,
-          date: call.call_date
-        });
-      });
-      console.log("call List : ", customCalls);
-
-      try {
-        res.status(200).json(customCalls);
-      } catch (error) {
-        console.log(error);
-        res.status(401).json({ result: 0, msg: "다시시도해주세용" });
-=======
     Call.find(
       { driverId: req.body.id, status: CALL_STATUS_READY },
       (err, calls) => {
@@ -134,7 +89,6 @@ module.exports = (app, jwt, User, Call) => {
             .status(401)
             .json({ result: SERVER_RESULT_FAILURE, msg: "다시시도해주세용" });
         }
->>>>>>> e790a783bf041cbe776ecc38b774ffa5cc601290
       }
     );
   });
@@ -145,58 +99,6 @@ module.exports = (app, jwt, User, Call) => {
       `API: ${DEFAULT_API}/call/request =============== ${req.body} :::::`
     );
 
-<<<<<<< HEAD
-    User.find({ id: req.body.driverId, status: 0 }, (err, data) => {
-      if (err) throw err;
-      // console.log('data =============', data, 'err ======================', err);
-      if (data.length === 1) {
-        Call.find(
-          { driverId: req.body.driverId, userId: req.body.userId },
-          async (err, data) => {
-            if (err) throw err;
-            console.log(
-              "data =============",
-              data,
-              "err ======================",
-              err
-            );
-            const call = new Call({
-              driverId: req.body.driverId,
-              userId: req.body.userId,
-              sPoint: req.body.sPoint,
-              destination: req.body.destination,
-              price: req.body.price,
-              call_date: Now,
-              status: 0 // 0 대기, 1 승인, 2 거절
-            });
-            if (data.length === 1) {
-              console.log("call List update");
-              await Call.updateOne(
-                { driverId: req.body.driverId, userId: req.body.userId },
-                {
-                  sPoint: req.body.sPoint,
-                  destination: req.body.destination,
-                  price: req.body.price,
-                  call_date: Now,
-                  status: 0
-                }
-              );
-            } else {
-              //save
-              console.log("call list insert");
-              call.save(err => {
-                console.log(err);
-                if (err) {
-                  res.status(401).json({ result: 0, msg: "에러낫오용" });
-                }
-                res.status(200).json({ result: 1, msg: "요청갓오용" });
-              });
-            }
-          }
-        );
-      } else {
-        res.status(401).json({ result: 0, msg: "운전중이에용" });
-=======
     User.find(
       { id: req.body.driverId, status: USER_STATUS_READY },
       (err, data) => {
@@ -257,36 +159,12 @@ module.exports = (app, jwt, User, Call) => {
             .status(401)
             .json({ result: SERVER_RESULT_FAILURE, msg: "운전중이에용" });
         }
->>>>>>> e790a783bf041cbe776ecc38b774ffa5cc601290
       }
     );
   });
 
   // GET driver info
   app.get(`${DEFAULT_API}/driver/list`, (req, res) => {
-<<<<<<< HEAD
-    User.find({ position: 1, status: 0 }, (err, dirvers) => {
-      if (err) throw err;
-      // console.log('dirver: ', dirvers);
-      let customDrivers = dirvers.map(driver => {
-        return Object.assign(
-          {},
-          {
-            id: driver.id,
-            name: driver.name,
-            status: driver.status,
-            date: driver.create_date
-          }
-        );
-      });
-      console.log("driver1: ", customDrivers);
-      try {
-        res.status(200).json(customDrivers);
-      } catch (error) {
-        console.log(error);
-      }
-    });
-=======
     User.find(
       { position: USER_POSITION_DRIVER, status: USER_STATUS_READY },
       (err, dirvers) => {
@@ -311,7 +189,6 @@ module.exports = (app, jwt, User, Call) => {
         }
       }
     );
->>>>>>> e790a783bf041cbe776ecc38b774ffa5cc601290
   });
 
   // User check
