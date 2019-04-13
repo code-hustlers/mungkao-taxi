@@ -1,7 +1,17 @@
 const DEFAULT_API = "/apis/v1";
-const moment = require('moment');
+const moment = require("moment");
+const {
+  USER_STATUS_READY,
+  USER_STATUS_WORK,
+  USER_POSITION_DRIVER,
+  CALL_STATUS_APPROVE,
+  CALL_STATUS_REJECT,
+  SERVER_RESULT_SUCCESS,
+  SERVER_RESULT_FAILURE
+} = require("../constants");
+console.log("TCL: USER_STATUS_READY", USER_STATUS_READY);
 
-const Now = moment().format('YYYY-MM-DD HH:mm:ss');
+const Now = moment().format("YYYY-MM-DD HH:mm:ss");
 
 module.exports = (app, jwt, User, Call) => {
   // API LIST
@@ -11,14 +21,24 @@ module.exports = (app, jwt, User, Call) => {
     // driver user status : 0 => 1
     // passenger user status : 0 => 1
     // call schema status : 0 => 1
-    try { 
-      await User.update({ id: req.body.driverId }, { status: 1 });
-      await User.update({ id: req.body.userId }, { status: 1 });
-      await Call.update({ driverId: req.body.driverId, userId: req.body.userId }, { status: 1 });
-      await res.status(200).json({ result:1, msg:'매칭 완료 HooHoo ~' });
+    try {
+      await User.update(
+        { id: req.body.driverId },
+        { status: USER_STATUS_WORK }
+      );
+      await User.update({ id: req.body.userId }, { status: USER_STATUS_WORK });
+      await Call.update(
+        { driverId: req.body.driverId, userId: req.body.userId },
+        { status: CALL_STATUS_APPROVE }
+      );
+      await res
+        .status(200)
+        .json({ result: SERVER_RESULT_SUCCESS, msg: "매칭 완료 HooHoo ~" });
     } catch (error) {
-      console.log('call/approval : ', error);
-      await res.status(401).json({ result:0, msg:'매칭 실패 FUCK...' });
+      console.log("call/approval : ", error);
+      await res
+        .status(401)
+        .json({ result: SERVER_RESULT_FAILURE, msg: "매칭 실패 FUCK..." });
     }
   });
 
@@ -28,103 +48,148 @@ module.exports = (app, jwt, User, Call) => {
     // passenger user status : 0 => 0
     // call schema status : 0 => 2
     try {
-      await Call.update({ driverId: req.body.driverId, userId: req.body.userId }, { status: 2 });
-      await res.status(200).json({ result:1, msg:'거절 완료 HooHoo' });
+      await Call.update(
+        { driverId: req.body.driverId, userId: req.body.userId },
+        { status: CALL_STATUS_REJECT }
+      );
+      await res
+        .status(200)
+        .json({ result: SERVER_RESULT_SUCCESS, msg: "거절 완료 HooHoo" });
     } catch (error) {
-      console.log('call/reject : ', error);
-      await res.status(401).json({ result:0, msg:'거절 실패 FUCK...' });
+      console.log("call/reject : ", error);
+      await res
+        .status(401)
+        .json({ result: SERVER_RESULT_FAILURE, msg: "거절 실패 FUCK..." });
     }
   });
 
   // GET call list
   app.post(`${DEFAULT_API}/call/list`, (req, res) => {
-    console.log("calllist req.body.id ===============", req.body.id)
-    Call.find({ driverId: req.body.id, status:0 }, (err, calls) => {
-      if(err) throw err;
-      let customCalls = calls.map(call => {
-        return Object.assign({
-          userId: call.userId,
-          sPoint: call.sPoint,
-          destination: call.destination,
-          price: call.price,
-          date: call.call_date
+    console.log("calllist req.body.id ===============", req.body.id);
+    Call.find(
+      { driverId: req.body.id, status: CALL_STATUS_READY },
+      (err, calls) => {
+        if (err) throw err;
+        let customCalls = calls.map(call => {
+          return Object.assign({
+            userId: call.userId,
+            sPoint: call.sPoint,
+            destination: call.destination,
+            price: call.price,
+            date: call.call_date
+          });
         });
-      });
-      console.log('call List : ', customCalls);
+        console.log("call List : ", customCalls);
 
-      try {
-        res.status(200).json(customCalls);
-      } catch (error) {
-        console.log(error);
-        res.status(401).json({ result:0, msg:'다시시도해주세용' });
+        try {
+          res.status(200).json(customCalls);
+        } catch (error) {
+          console.log(error);
+          res
+            .status(401)
+            .json({ result: SERVER_RESULT_FAILURE, msg: "다시시도해주세용" });
+        }
       }
-    });
+    );
   });
 
   // POST Insert call info
   app.post(`${DEFAULT_API}/call/request`, (req, res) => {
-    console.log(`API: ${DEFAULT_API}/call/request =============== ${req.body} :::::`);
-    
-    User.find({ id: req.body.driverId, status: 0 }, (err, data) => {
-      if(err) throw err;
-      // console.log('data =============', data, 'err ======================', err);
-      if(data.length === 1) {
+    console.log(
+      `API: ${DEFAULT_API}/call/request =============== ${req.body} :::::`
+    );
 
-        Call.find({ driverId: req.body.driverId, userId: req.body.userId }, async (err, data) => {
-          if(err) throw err;
-          console.log('data =============', data, 'err ======================', err);
-          const call = new Call({
-            driverId: req.body.driverId,
-            userId: req.body.userId,
-            sPoint: req.body.sPoint,
-            destination: req.body.destination,
-            price: req.body.price,
-            call_date: Now,
-            status: 0 // 0 대기, 1 승인, 2 거절
-          });
-          if(data.length === 1) {
-            console.log('call List update');
-            await Call.updateOne({ driverId: req.body.driverId, userId: req.body.userId }, { sPoint: req.body.sPoint, destination: req.body.destination, price: req.body.price, call_date: Now, status: 0 });
-          }else {
-            //save
-            console.log('call list insert');
-            call.save(err => {
-              console.log(err);
-              if(err) {
-                res.status(401).json({ result:0, msg:'에러낫오용' });
+    User.find(
+      { id: req.body.driverId, status: USER_STATUS_READY },
+      (err, data) => {
+        if (err) throw err;
+        // console.log('data =============', data, 'err ======================', err);
+        if (data.length === 1) {
+          Call.find(
+            { driverId: req.body.driverId, userId: req.body.userId },
+            async (err, data) => {
+              if (err) throw err;
+              console.log(
+                "data =============",
+                data,
+                "err ======================",
+                err
+              );
+              const call = new Call({
+                driverId: req.body.driverId,
+                userId: req.body.userId,
+                sPoint: req.body.sPoint,
+                destination: req.body.destination,
+                price: req.body.price,
+                call_date: Now,
+                status: CALL_STATUS_READY // 0 대기, 1 승인, 2 거절
+              });
+              if (data.length === 1) {
+                console.log("call List update");
+                await Call.updateOne(
+                  { driverId: req.body.driverId, userId: req.body.userId },
+                  {
+                    sPoint: req.body.sPoint,
+                    destination: req.body.destination,
+                    price: req.body.price,
+                    call_date: Now,
+                    status: CALL_STATUS_READY
+                  }
+                );
+              } else {
+                //save
+                console.log("call list insert");
+                call.save(err => {
+                  console.log(err);
+                  if (err) {
+                    res.status(401).json({
+                      result: SERVER_RESULT_FAILURE,
+                      msg: "에러낫오용"
+                    });
+                  }
+                  res
+                    .status(200)
+                    .json({ result: SERVER_RESULT_SUCCESS, msg: "요청갓오용" });
+                });
               }
-              res.status(200).json({ result:1, msg:'요청갓오용' });
-            });
-          }
-        });
-
-      }else {
-        res.status(401).json({ result:0, msg:'운전중이에용' });
+            }
+          );
+        } else {
+          res
+            .status(401)
+            .json({ result: SERVER_RESULT_FAILURE, msg: "운전중이에용" });
+        }
       }
-    });
+    );
   });
 
   // GET driver info
   app.get(`${DEFAULT_API}/driver/list`, (req, res) => {
-    User.find({ position: 1, status:0 }, (err, dirvers) => {
-      if(err) throw err;
-      // console.log('dirver: ', dirvers);
-      let customDrivers = dirvers.map(driver => {
-        return Object.assign({}, {
-          id: driver.id,
-          name: driver.name,
-          status: driver.status,
-          date: driver.create_date
+    User.find(
+      { position: USER_POSITION_DRIVER, status: USER_STATUS_READY },
+      (err, dirvers) => {
+        if (err) throw err;
+        console.log("dirver: ", dirvers);
+        let customDrivers = dirvers.map(driver => {
+          return Object.assign(
+            {},
+            {
+              id: driver.id,
+              name: driver.name,
+              status: driver.status,
+              date: driver.create_date
+            }
+          );
         });
-      });
-      console.log('driver1: ', customDrivers);
-      try {
-        res.status(200).json(customDrivers)
-      } catch (error) {
-        console.log(error)
+        console.log("driver1: ", customDrivers);
+        try {
+          res.status(200).json(customDrivers);
+        } catch (error) {
+          console.log(error);
+        }
       }
-    })
-  })
+    );
+  });
 
   // User check
   app.post(`${DEFAULT_API}/auth/check`, (req, res) => {
@@ -153,12 +218,14 @@ module.exports = (app, jwt, User, Call) => {
         console.log("error: ", err);
         if (err) {
           res.status(401).json({
-            result: 0,
+            result: SERVER_RESULT_FAILURE,
             msg: err.code === 11000 ? "존재하는 아이디 입니다." : "나도몰랑"
           });
           return;
         }
-        res.status(200).json({ result: 1, msg: "회원가입 성공!" });
+        res
+          .status(200)
+          .json({ result: SERVER_RESULT_SUCCESS, msg: "회원가입 성공!" });
       });
     }
 
@@ -229,10 +296,14 @@ module.exports = (app, jwt, User, Call) => {
     }
 
     try {
-      await jwt.verify(token, req.app.get("jwt-secret"), (err, decoded, other) => {
-        console.log("TCL: decoded", decoded, other);
-        res.json(decoded);
-      });
+      await jwt.verify(
+        token,
+        req.app.get("jwt-secret"),
+        (err, decoded, other) => {
+          console.log("TCL: decoded", decoded, other);
+          res.json(decoded);
+        }
+      );
     } catch (error) {
       console.error(error);
     }
