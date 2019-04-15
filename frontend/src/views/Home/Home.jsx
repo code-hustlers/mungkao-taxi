@@ -3,115 +3,47 @@ import axios from "axios";
 import { withCookies } from "react-cookie";
 import { withRouter } from "react-router-dom";
 import withStore from "../../lib/withStore";
-import Button from "../../components/Button";
 // fullpage
 import ReactFullpage from '@fullpage/react-fullpage';
 import 'fullpage.js/vendors/scrolloverflow';
-import { CardForm } from "../../components/Card/CardForm";
-import styled from 'styled-components';
 import { searchCurrentRegisteredToken } from "../../lib/newFCM";
+// Component
+import OverView from './OverView';
+import Drive from './Drive';
 
 const fullpageProps = {
   scrollOverflow: true,
   sectionsColor: ['#fff', '#fff'],
-  anchors: ['overview', 'actions']
+  anchors: ['overview', 'drive']
 }
 const fcmTest = async () => {
   const token = await searchCurrentRegisteredToken();
   console.log("TCL: fcmTest -> token", token);
 }
 
-const Title = styled.div`
-  text-align: center;
-  font-size: 1.3rem;
-  font-weight: bold;
-`;
-
-const Div = styled.div`
-  border: 2px solid #eee;
-  padding: 0 3rem;
-  &:hover {
-    background: black;
-    color: #fff;
-  };
-  ${props => props.userID === props.id ?
-    `background: black;
-    color: #fff;`
-  : null}
-`;
-
 const FullpageWrapper = (props) => (
   <ReactFullpage
     {...fullpageProps}
     render = {({ state, fullpageApi }) => {
-      const { userInfo, drivers, handleSelectUser, userID, handleClick, calls, handleReject } = props;
-      console.log({userInfo}, {drivers}, {calls});
-
-      const driverElem = drivers.map(el => {
-        return(el.status === 0 ?
-          <CardForm key={el.id} >
-            <Div onClick={handleSelectUser(el.id)} userID={userID} id={el.id}>
-              <h2>{el.id}</h2>
-              <span>{el.name}</span>
-              <span>{el.date}</span><br/>
-            </Div>
-          </CardForm>
-          : null);
-      });
-
-      const callElem = calls.map((el, idx) => {
-        if(el.sPoint === '') {
-          el.sPoint = '여기서부터 ';
-        }
-        if(el.destination === '') {
-          el.destination = '저기까지';
-        }
-        return (
-          <CardForm key={idx}>
-            <Div onClick={handleSelectUser(el.userId)} userID={userID} id={el.userId}>
-              <h2>{el.userId}</h2>
-              <p>{`${el.sPoint} ~ ${el.destination}`}</p>
-              <p>{el.price <= 0 ? '꽁짜' : el.price}</p>
-              <p>{el.date}</p>
-            </Div>
-          </CardForm>
-        )
-      });
+      const { userInfo, drivers, handleSelectUser, userID, handleClick, calls, handleReject, isPassengerHome, isDriverHome } = props;
 
       return(
         <ReactFullpage.Wrapper>
           <div className="section">
-            <span style={{ color: "#8e44ad" }}>{userInfo.id}</span>
-            <span>님, 어서오세요.</span>
-            <button onClick={fcmTest}>FCM Test</button>
+            <OverView userInfo={userInfo} fcmTest={fcmTest} />
           </div>
           <div className="section">
-            <div>
-
-              {!userInfo.position || userInfo.position === 0 ? (
-                <div>
-                  <Title>마음에 드는 운전자를 선택하세요:D</Title>
-                  {driverElem}
-                  <CardForm>
-                    <Button onClick={handleClick}>
-                      call
-                    </Button>
-                  </CardForm>
-                </div>
-                ) : (
-                <div>
-                  <Title>당신이 요청받은 콜 리스트 입니다:D</Title>
-                  {callElem}
-                  <Button onClick={handleClick} style={{width:'45%', margin:'auto 2.5%'}}>
-                    Ok
-                  </Button>
-                  <Button onClick={handleReject} style={{width:'45%', margin:'auto 2.5%'}}>
-                    No
-                  </Button>
-                </div>
-              )}
-
-            </div>
+            <Drive
+              userInfo={userInfo}
+              userID={userID}
+              drivers={drivers}
+              calls={calls}
+              handleSelectUser={handleSelectUser}
+              handleClick={handleClick}
+              handleReject={handleReject}
+              isPassengerHome={isPassengerHome}
+              isDriverHome={isDriverHome}
+            />
           </div>
         </ReactFullpage.Wrapper>
       );
@@ -125,17 +57,48 @@ class Home extends React.Component {
     drivers: [],
     calls: [],
     userID: '',
+    isPassengerHome: false,
+    isDriverHome: false,
   };
 
   async componentDidMount() {
-    const { handleCheck, handleGetDriver, handleCallList } = this;
+    const { handleCheck, handleGetDriver, handleCallList, handleGetCallStatus } = this;
     await handleCheck();
-    console.log(this.state.userInfo);
-    if(!this.state.userInfo.position || this.state.userInfo.position === 0) {
+    const { userInfo } = this.state;
+    const type = !userInfo.position || userInfo.position === 0 ? 'passenger' : 'driver';
+    await handleGetCallStatus(type, userInfo.id)
+    
+    if(!userInfo.position || userInfo.position === 0) {
       await handleGetDriver();
     }else {
       await handleCallList();
     }
+  }
+  componentWillUnmount() {
+    this.setState({ isPassengerHome: false, isDriverHome: false });
+  }
+
+  handleGetCallStatus = (type, userId) => {
+    const userType = type === 'driver' ? 'driverId' : 'userId';
+    const data = {
+      type: type,
+      [userType]: userId
+    };
+    console.log({data})
+    axios({
+      method: 'post',
+      url: `${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/apis/v1/call/status`,
+      data: data
+    }).then(res => {
+      console.log("handleGetCallStatus success : ", res);
+      if(type === 'passenger') {
+        this.setState({ isPassengerHome: res.data.status !== 2 ? true : false });
+      }else if(type === 'driver') {
+        this.setState({ isDriverHome: res.data.status === 1 ? true : false });
+      }
+    }).catch(err => {
+      console.log("handleGetCallStatus failure : ", err);
+    });
   }
 
   handleCheck = async () => {
@@ -155,7 +118,7 @@ class Home extends React.Component {
       }/apis/v1/verify?token=${token}`
     })
       .then(res => {
-        console.log("TCL: Home -> handleCheck -> res", res);
+        // console.log("TCL: Home -> handleCheck -> res", res);
         this.setState({ userInfo: res.data });
       })
       .catch(() => {
@@ -184,7 +147,7 @@ class Home extends React.Component {
       data: { id: userInfo.id }
     }).then(res => {
       this.setState({ calls: res.data });
-      console.log('call list success : ', res);
+      // console.log('call list success : ', res);
     }).catch(err => {
       console.log('call list failure : ', err);
     });
@@ -201,16 +164,17 @@ class Home extends React.Component {
       price: 0,
     };
 
-    await axios({
+    await this.setState({ userID: '' });
+    return axios({
       method: 'post',
       url: `${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/apis/v1/call/request`,
       data: data
     }).then(res => {
       console.log('call API success : ', res);
+      this.setState({ isPassengerHome: true });
     }).catch(err => {
       console.log('call API failure : ', err);
     });
-    await this.setState({ userID: '' });
   }
 
   handleSelectUser = userID => () => {
@@ -248,7 +212,8 @@ class Home extends React.Component {
       url: `${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/apis/v1/call/approval`,
       data: data
     }).then(res => {
-      console.log(res);
+      // console.log(res);
+      this.setState({ isDriverHome: true });
     }).catch(err => {
       console.log(err);
     });
@@ -277,7 +242,7 @@ class Home extends React.Component {
         url: `${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/apis/v1/call/reject`,
         data: data
       }).then(res => {
-        console.log(res);
+        // console.log(res);
       }).catch(err => {
         console.log(err);
       });
@@ -288,7 +253,8 @@ class Home extends React.Component {
   }
 
   render() {
-    const { userInfo, drivers, userID, calls } = this.state;
+    const { userInfo, drivers, userID, calls, isPassengerHome, isDriverHome } = this.state;
+    console.log("Home.jsx : ", {isPassengerHome}, {isDriverHome});
     // console.log('render drivers : ', drivers);
 
     return (
@@ -301,6 +267,8 @@ class Home extends React.Component {
           handleSelectUser={this.handleSelectUser}
           handleClick={this.handleClick}
           handleReject={this.handleReject}
+          isPassengerHome={isPassengerHome}
+          isDriverHome={isDriverHome}
         />
       </div>
     );

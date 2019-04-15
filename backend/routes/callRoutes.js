@@ -4,6 +4,32 @@ import { DEFAULT_API, USER_STATUS_READY, USER_STATUS_WORK, USER_POSITION_DRIVER,
 const NOW = moment().format("YYYY-MM-DD HH:mm:ss");
 
 const callRoutes = (app, User, Call) => {
+
+    // GET call status
+    app.post(`${DEFAULT_API}/call/status`, (req, res) => {
+        if(req.body.type === 'driver') {
+            Call.find({ driverId: req.body.driverId, status: CALL_STATUS_APPROVE }, (err, data) => {
+                if(err) throw err;
+                try {
+                    res.status(200).json({ result: SERVER_RESULT_SUCCESS, msg: "Get status success!", status: data[0].status });
+                } catch (error) {
+                    res.status(401).json({ result: SERVER_RESULT_FAILURE, msg: error });
+                }
+            });
+        }else if(req.body.type === 'passenger') {
+            Call.find().where('userId').equals(req.body.userId).in('status', [CALL_STATUS_READY, CALL_STATUS_APPROVE]).then(data => {
+                console.log('++++++++++++++++++++++++++++++++++++++++++++++++++++++123', data);
+                try {
+                    res.status(200).json({ result: SERVER_RESULT_SUCCESS, msg: "Get status success!", status: data[0].status });
+                } catch (error) {
+                    res.status(401).json({ result: SERVER_RESULT_FAILURE, msg: error });
+                }
+            });
+        }else {
+            res.status(401).json({ result: SERVER_RESULT_FAILURE, msg: "parameter type error!" });
+        }
+    });
+
     // PUT call approval
     app.put(`${DEFAULT_API}/call/approval`, async(req, res) => {
         // driver user status : 0 => 1
@@ -102,13 +128,14 @@ const callRoutes = (app, User, Call) => {
                             });
                             if (data.length === 1) {
                                 console.log("call List update");
-                                await Call.updateOne({ driverId: req.body.driverId, userId: req.body.userId }, {
+                                await Call.update({ driverId: req.body.driverId, userId: req.body.userId }, {
                                     sPoint: req.body.sPoint,
                                     destination: req.body.destination,
                                     price: req.body.price,
                                     call_date: NOW,
                                     status: CALL_STATUS_READY
                                 });
+                                res.status(200).json({ result: SERVER_RESULT_SUCCESS, msg: "요청갓오용" });
                             } else {
                                 //save
                                 console.log("call list insert");
