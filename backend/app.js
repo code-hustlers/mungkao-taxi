@@ -14,18 +14,18 @@ app.use(morgan("dev"));
 
 // CORS
 app.all("/*", function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "POST,GET,OPTIONS,PUT,DELETE");
-  res.header("Access-Control-Allow-Headers", "Content-Type,Accept");
-  next();
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "POST,GET,OPTIONS,PUT,DELETE");
+    res.header("Access-Control-Allow-Headers", "Content-Type,Accept");
+    next();
 });
 
 app.use(
-  session({
-    secret: "MuNgkaOSessIOn",
-    resave: false,
-    saveUninitialized: true
-  })
+    session({
+        secret: "MuNgkaOSessIOn",
+        resave: false,
+        saveUninitialized: true
+    })
 );
 
 app.set("jwt-secret", "MuNgkaO");
@@ -34,11 +34,11 @@ const port = process.env.PORT || 8081;
 
 const { DB_ID, DB_PW, DB_NAME, DB_URL } = process.env;
 console.log(
-  "TCL: DB_ID, DB_PW, DB_NAME, DB_URL",
-  DB_ID,
-  DB_PW,
-  DB_NAME,
-  DB_URL
+    "TCL: DB_ID, DB_PW, DB_NAME, DB_URL",
+    DB_ID,
+    DB_PW,
+    DB_NAME,
+    DB_URL
 );
 
 // 몽고디비 연결
@@ -57,36 +57,38 @@ console.log(
 const db = mongoose.connection;
 db.on("error", console.error);
 db.once("open", () => {
-  console.log("Connected mongod server");
+    console.log("Connected mongod server");
 });
 
 mongoose
-  .connect(`mongodb+srv://${DB_ID}:${DB_PW}@${DB_URL}/${DB_NAME}`, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-  });
-  // .then(
-  //   data => {
-  //     const state = data.connection._hasOpened;
-  //     if (!state) {
-  //       mongoose.connect(`mongodb://${DB_ID}:${DB_PW}@${DB_URL}`, {
-  //         useNewUrlParser: true
-  //       });
-  //     }
-  //   },
-  //   err => {
-  //     console.log(err);
-  //   }
-  // );
+    .connect(`mongodb+srv://${DB_ID}:${DB_PW}@${DB_URL}/${DB_NAME}`, {
+        useNewUrlParser: true,
+        useCreateIndex: true,
+    });
+// .then(
+//   data => {
+//     const state = data.connection._hasOpened;
+//     if (!state) {
+//       mongoose.connect(`mongodb://${DB_ID}:${DB_PW}@${DB_URL}`, {
+//         useNewUrlParser: true
+//       });
+//     }
+//   },
+//   err => {
+//     console.log(err);
+//   }
+// );
 
 // model import
 const User = require("./models/user");
 const Call = require("./models/call");
 
 // Routes
-require("./routes")(app, jwt, User, Call);
+import { authRoutes, callRoutes } from './routes';
+authRoutes(app, jwt, User);
+callRoutes(app, User, Call);
 require("./routes/push")(app);
 
 app.listen(port, () => {
-  console.log("Express server start " + port);
+    console.log("Express server start " + port);
 });
