@@ -34,7 +34,8 @@ const FullpageWrapper = props => (
         calls,
         handleReject,
         isPassengerHome,
-        isDriverHome
+        isDriverHome,
+        handleArrive
       } = props;
 
       return (
@@ -53,6 +54,7 @@ const FullpageWrapper = props => (
               handleReject={handleReject}
               isPassengerHome={isPassengerHome}
               isDriverHome={isDriverHome}
+              handleArrive={handleArrive}
             />
           </div>
         </ReactFullpage.Wrapper>
@@ -101,12 +103,12 @@ class Home extends React.Component {
       type: type,
       [userType]: userId
     };
-    console.log({ data });
+    // console.log({ data });
     axios({
       method: "post",
       url: `${process.env.REACT_APP_SERVER_URL}:${
         process.env.REACT_APP_SERVER_PORT
-      }/apis/v1/call/status`,
+      }/apis/v1/call/info`,
       data: data
     })
       .then(res => {
@@ -301,6 +303,62 @@ class Home extends React.Component {
     await this.setState({ userID: "" });
   };
 
+  handleArrive = async e => {
+    e.preventDefault();
+
+    const { userInfo } = this.state;
+    const flag = !userInfo.position || userInfo.position === 0 ? true : false;
+    const type =
+      !userInfo.position || userInfo.position === 0 ? "passenger" : "driver";
+    let userId = "";
+    const userType = type === "driver" ? "driverId" : "userId";
+
+    const infoParam = {
+      type: type,
+      [userType]: userInfo.id
+    };
+    // console.log({ infoParam });
+
+    await axios({
+      method: "post",
+      url: `${process.env.REACT_APP_SERVER_URL}:${
+        process.env.REACT_APP_SERVER_PORT
+      }/apis/v1/call/info`,
+      data: infoParam
+    })
+      .then(res => {
+        // console.log(res);
+        userId = res.data.userId;
+      })
+      .catch(err => {
+        console.log(err);
+      });
+
+    const arriveParam = {
+      driverId: userInfo.id,
+      userId: userId
+    };
+    console.log({ arriveParam });
+
+    await axios({
+      method: "post",
+      url: `${process.env.REACT_APP_SERVER_URL}:${
+        process.env.REACT_APP_SERVER_PORT
+      }/apis/v1/call/arrive`,
+      data: arriveParam
+    })
+      .then(() => {
+        if (flag) {
+          this.setState({ isPassengerHome: false });
+        } else {
+          this.setState({ isDriverHome: false });
+        }
+      })
+      .catch(err => {});
+
+    (await flag) ? this.handleGetDriver() : this.handleCallList();
+  };
+
   render() {
     const {
       userInfo,
@@ -325,6 +383,7 @@ class Home extends React.Component {
           handleReject={this.handleReject}
           isPassengerHome={isPassengerHome}
           isDriverHome={isDriverHome}
+          handleArrive={this.handleArrive}
         />
       </div>
     );
