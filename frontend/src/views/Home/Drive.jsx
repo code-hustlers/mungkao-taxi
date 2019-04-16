@@ -30,9 +30,18 @@ const swing = keyframes`
     100% { transform: rotate(0deg); right: 100% }
 `;
 
+const passengerSwing = keyframes`
+    0% { transform: rotate(5deg); right: 0%; }
+    20% { transform: rotate(5deg); right: 0%; }
+    40% { transform: rotate(-5deg); right: 20%; }
+    60% { transform: rotate(10deg); right: 40%; }
+    80% { transform: rotate(-10deg) right: 20%; }
+    100% { transform: rotate(0deg); right: 0%; }
+`;
+
 const Swing = styled.div`
     position: fixed;
-    animation: ${swing} 2s linear infinite;
+    animation: ${props => props.type === 'driver' ? swing : passengerSwing} 2s linear infinite;
 `;
 
 const Drive = (props) => {
@@ -73,33 +82,39 @@ const Drive = (props) => {
     return(!isPassengerHome && !isDriverHome ?
         <div>
             {!userInfo.position || userInfo.position === 0 ? (
-                <div>
-                  <Title>마음에 드는 운전자를 선택하세요:D</Title>
-                  {driverElem}
-                  <CardForm>
-                    <Button onClick={handleClick}>
-                      call
-                    </Button>
-                  </CardForm>
-                </div>
-                ) : (
-                <div>
-                  <Title>당신이 요청받은 콜 리스트 입니다:D</Title>
-                  {callElem}
-                  <Button onClick={handleClick} style={{width:'45%', margin:'auto 2.5%'}}>
-                    Ok
+              <div>
+                <Title>마음에 드는 운전자를 선택하세요:D</Title>
+                {driverElem}
+                <CardForm>
+                  <Button onClick={handleClick}>
+                    call
                   </Button>
-                  <Button onClick={handleReject} style={{width:'45%', margin:'auto 2.5%'}}>
-                    No
-                  </Button>
-                </div>
-              )}
+                </CardForm>
+              </div>
+              ) : (
+              <div>
+                <Title>당신이 요청받은 콜 리스트 입니다:D</Title>
+                {callElem}
+                <Button onClick={handleClick} style={{width:'45%', margin:'auto 2.5%'}}>
+                  Ok
+                </Button>
+                <Button onClick={handleReject} style={{width:'45%', margin:'auto 2.5%'}}>
+                  No
+                </Button>
+              </div>
+            )}
         </div>
         :
         <div>
-            <Swing>
-                <img src="/mungCar.png" alt="멍카" />
+          {!userInfo.position || userInfo.position === 0 ? (
+            <Swing type="driver">
+              <img src="/mungCar.png" alt="멍카" />
             </Swing>
+            ) : (
+            <Swing type="passenger">
+              <img src="/qvil.png" alt="태수" />
+            </Swing>
+          )}
         </div>
     );
 }
