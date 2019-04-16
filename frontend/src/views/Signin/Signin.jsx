@@ -8,11 +8,7 @@ import Input from "../../components/Input";
 import Button from "../../components/Button";
 import { CardForm } from "../../components/Card/CardForm";
 import Loading from "../../components/Loading";
-import {
-  // askForPermissioToReceiveNotifications,
-  subscribeUser
-} from "../../lib/pushNotifications";
-
+import { requestPermission } from "../../lib/newFCM";
 class Signin extends React.Component {
   state = {
     id: "",
@@ -77,19 +73,20 @@ class Signin extends React.Component {
   handleRequestPushNoti = async () => {
     this.setState({ loading: true });
     try {
-      const subscription = await subscribeUser();
-      axios
-        .post(
-          `${process.env.REACT_APP_SERVER_URL}:${
-            process.env.REACT_APP_SERVER_PORT
-          }/push`,
-          {
-            data: "5555",
-            subscription
-          }
-        )
-        .then(res => res)
-        .catch(error => console.error(error));
+      requestPermission();
+      // const subscription = await requestPermission();
+      // axios
+      //   .post(
+      //     `${process.env.REACT_APP_SERVER_URL}:${
+      //       process.env.REACT_APP_SERVER_PORT
+      //     }/push`,
+      //     {
+      //       data: "5555",
+      //       subscription
+      //     }
+      //   )
+      //   .then(res => res)
+      //   .catch(error => console.error(error));
     } catch (error) {
       console.error(error);
     } finally {
