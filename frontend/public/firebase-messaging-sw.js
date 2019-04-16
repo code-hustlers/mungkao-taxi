@@ -17,12 +17,6 @@ firebase.initializeApp({
 // messages.
 const messaging = firebase.messaging();
 
-// 아래 코드는 service worker말고 다른 js에서 호출해야함 여기서 호출하면 에러
-// Handle incoming messages. Called when:
-// - a message is received while the app has focus
-// - the user clicks on an app notification created by a service worker
-//   `messaging.setBackgroundMessageHandler` handler.
-
 messaging.setBackgroundMessageHandler(function(payload) {
   console.log(
     "[firebase-messaging-sw.js] Received background message ",

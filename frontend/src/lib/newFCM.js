@@ -1,4 +1,9 @@
 import firebase from "firebase";
+// import * as admin from "firebase-admin";
+// import serviceAccount from "../../src/service-account-file.json";
+// import serviceAccount from "../service-account-file.json";
+// import { google } from "googleapis";
+// import gapi from "gapi-client";
 
 let messaging;
 
@@ -21,9 +26,17 @@ export const init = async () => {
   requestPermission(messaging);
   const token = await searchCurrentRegisteredToken(messaging);
   console.log("TCL: init -> token", token);
-  const refreshedToken = await monitoringRefreshToken(messaging);
-  console.log("TCL: init -> refreshedToken", refreshedToken);
+  // 아래 함수에서 hang걸림
+  // const refreshedToken = await monitoringRefreshToken(messaging);
+  // console.log("TCL: init -> refreshedToken", refreshedToken);
   onMessageForeGround(messaging);
+  // getAccessToken()
+  //   .then(res => {
+  //     console.log("TCL: init -> res", res);
+  //   })
+  //   .catch(error => {
+  //     console.log("TCL: init -> error", error);
+  //   });
 };
 
 export const requestPermission = messaging => {
@@ -103,6 +116,35 @@ export const onMessageForeGround = messaging => {
   //   `messaging.setBackgroundMessageHandler` handler.
   messaging.onMessage(function(payload) {
     console.log("Message received. ", payload);
+    const { title, body } = payload.notification;
     // ...
+    new Notification(title, { body, icon: "/mungkao-taxi-logo.png" });
   });
 };
+
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount)
+//   // databaseURL: "https://<DATABASE_NAME>.firebaseio.com"
+// });
+
+// export function getAccessToken() {
+//   return new Promise(function(resolve, reject) {
+//     var key = serviceAccount;
+//     console.log("TCL: getAccessToken -> key", key);
+//     // var jwtClient = new google.auth.JWT(
+//     var jwtClient = new gapi.auth.JWT(
+//       key.client_email,
+//       null,
+//       key.private_key
+//       // SCOPES,
+//       // null
+//     );
+//     jwtClient.authorize(function(err, tokens) {
+//       if (err) {
+//         reject(err);
+//         return;
+//       }
+//       resolve(tokens.access_token);
+//     });
+//   });
+// }

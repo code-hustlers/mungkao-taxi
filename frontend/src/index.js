@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
 // import * as serviceWorker from "./serviceWorker";
-// import { init } from "./lib/newFCM";
+import { init } from "./lib/newFCM";
 // import { initializeFirebase, requestPermission } from "./lib/pushNotifications";
 // import { requestPermission } from "./lib/pushNotifications";
 
@@ -14,4 +14,4 @@ ReactDOM.render(<App />, document.getElementById("root"));
 // serviceWorker.register();
 // initializeFirebase();
 // requestPermission();
-// init();
+init();
