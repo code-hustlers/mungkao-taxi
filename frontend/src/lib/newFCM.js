@@ -1,11 +1,4 @@
 import firebase from "firebase";
-// import * as admin from "firebase-admin";
-// import serviceAccount from "../../src/service-account-file.json";
-// import serviceAccount from "../service-account-file.json";
-// import { google } from "googleapis";
-// import gapi from "gapi-client";
-
-let messaging;
 
 export const init = async () => {
   var config = {
@@ -18,8 +11,7 @@ export const init = async () => {
   };
   firebase.initializeApp(config);
   // Retrieve Firebase Messaging object.
-  // const messaging = firebase.messaging();
-  messaging = firebase.messaging();
+  const messaging = firebase.messaging();
   console.log("TCL: init -> messaging", messaging);
   // Add the public key generated from the console here.
   messaging.usePublicVapidKey(process.env.REACT_APP_PUBLIC_KEY);
@@ -52,11 +44,11 @@ export const requestPermission = messaging => {
     });
 };
 
-export const searchCurrentRegisteredToken = (_messaging = messaging) => {
+export const searchCurrentRegisteredToken = messaging => {
   return new Promise((resolve, reject) => {
     // Get Instance ID token. Initially this makes a network call, once retrieved
     // subsequent calls to getToken will return from cache.
-    _messaging
+    messaging
       .getToken()
       .then(function(currentToken) {
         if (currentToken) {
@@ -121,30 +113,3 @@ export const onMessageForeGround = messaging => {
     new Notification(title, { body, icon: "/mungkao-taxi-logo.png" });
   });
 };
-
-// admin.initializeApp({
-//   credential: admin.credential.cert(serviceAccount)
-//   // databaseURL: "https://<DATABASE_NAME>.firebaseio.com"
-// });
-
-// export function getAccessToken() {
-//   return new Promise(function(resolve, reject) {
-//     var key = serviceAccount;
-//     console.log("TCL: getAccessToken -> key", key);
-//     // var jwtClient = new google.auth.JWT(
-//     var jwtClient = new gapi.auth.JWT(
-//       key.client_email,
-//       null,
-//       key.private_key
-//       // SCOPES,
-//       // null
-//     );
-//     jwtClient.authorize(function(err, tokens) {
-//       if (err) {
-//         reject(err);
-//         return;
-//       }
-//       resolve(tokens.access_token);
-//     });
-//   });
-// }

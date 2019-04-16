@@ -7,12 +7,16 @@ console.log("firebase-messaing-sw.js");
 importScripts("https://www.gstatic.com/firebasejs/4.8.1/firebase-app.js");
 importScripts("https://www.gstatic.com/firebasejs/4.8.1/firebase-messaging.js");
 
+// 1. Service Worker install Check
+self.addEventListener("install", e => {
+  console.log("Installed My Service Worker!");
+});
+
 // Initialize the Firebase app in the service worker by passing in the
 // messagingSenderId.
 firebase.initializeApp({
-  messagingSenderId: "760674505097"
+  messagingSenderId: "760674505097" // webpack으로 compile해서 id숨기는거 필요
 });
-
 // Retrieve an instance of Firebase Messaging so that it can handle background
 // messages.
 const messaging = firebase.messaging();
@@ -36,10 +40,6 @@ messaging.setBackgroundMessageHandler(function(payload) {
 });
 
 // Push Noti
-// self.addEventListener("install", e => {
-//   console.log("Installed My Service Worker!");
-// });
-
 // self.addEventListener("push", function(event) {
 //   console.log("[Service Worker] Push Received.");
 //   console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
