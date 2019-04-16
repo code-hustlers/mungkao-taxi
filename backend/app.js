@@ -1,14 +1,19 @@
 import dotenv from "dotenv";
 import exprees from "express";
+import bodyParser from "body-parser";
+import mongoose from "mongoose";
+import morgan from "morgan";
+import jwt from "jsonwebtoken";
+import session from "express-session";
+// model import
+import User from "./models/user";
+import Call from "./models/call";
+// Routes
+import { authRoutes, callRoutes } from "./routes";
+
+const app = exprees();
 
 dotenv.config();
-const app = exprees();
-const bodyParser = require("body-parser");
-const mongoose = require("mongoose");
-
-const morgan = require("morgan");
-const jwt = require("jsonwebtoken");
-const session = require("express-session");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -80,12 +85,6 @@ mongoose.connect(`mongodb+srv://${DB_ID}:${DB_PW}@${DB_URL}/${DB_NAME}`, {
 //   }
 // );
 
-// model import
-const User = require("./models/user");
-const Call = require("./models/call");
-
-// Routes
-import { authRoutes, callRoutes } from "./routes";
 authRoutes(app, jwt, User);
 callRoutes(app, User, Call);
 require("./routes/push")(app);
