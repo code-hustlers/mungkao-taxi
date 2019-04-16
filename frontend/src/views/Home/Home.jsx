@@ -63,6 +63,7 @@ const FullpageWrapper = props => (
   />
 );
 
+// 풀리퀘 테스트
 class Home extends React.Component {
   state = {
     userInfo: {},
