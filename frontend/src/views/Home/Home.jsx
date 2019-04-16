@@ -4,30 +4,40 @@ import { withCookies } from "react-cookie";
 import { withRouter } from "react-router-dom";
 import withStore from "../../lib/withStore";
 // fullpage
-import ReactFullpage from '@fullpage/react-fullpage';
-import 'fullpage.js/vendors/scrolloverflow';
+import ReactFullpage from "@fullpage/react-fullpage";
+import "fullpage.js/vendors/scrolloverflow";
 import { searchCurrentRegisteredToken } from "../../lib/newFCM";
 // Component
-import OverView from './OverView';
-import Drive from './Drive';
+import OverView from "./OverView";
+import Drive from "./Drive";
 
 const fullpageProps = {
   scrollOverflow: true,
-  sectionsColor: ['#fff', '#fff'],
-  anchors: ['overview', 'drive']
-}
+  sectionsColor: ["#fff", "#fff"],
+  anchors: ["overview", "drive"]
+};
 const fcmTest = async () => {
   const token = await searchCurrentRegisteredToken();
   console.log("TCL: fcmTest -> token", token);
-}
+};
 
-const FullpageWrapper = (props) => (
+const FullpageWrapper = props => (
   <ReactFullpage
     {...fullpageProps}
-    render = {({ state, fullpageApi }) => {
-      const { userInfo, drivers, handleSelectUser, userID, handleClick, calls, handleReject, isPassengerHome, isDriverHome } = props;
+    render={({ state, fullpageApi }) => {
+      const {
+        userInfo,
+        drivers,
+        handleSelectUser,
+        userID,
+        handleClick,
+        calls,
+        handleReject,
+        isPassengerHome,
+        isDriverHome
+      } = props;
 
-      return(
+      return (
         <ReactFullpage.Wrapper>
           <div className="section">
             <OverView userInfo={userInfo} fcmTest={fcmTest} />
@@ -51,26 +61,33 @@ const FullpageWrapper = (props) => (
   />
 );
 
+// 풀리퀘 테스트
 class Home extends React.Component {
   state = {
     userInfo: {},
     drivers: [],
     calls: [],
-    userID: '',
+    userID: "",
     isPassengerHome: false,
-    isDriverHome: false,
+    isDriverHome: false
   };
 
   async componentDidMount() {
-    const { handleCheck, handleGetDriver, handleCallList, handleGetCallStatus } = this;
+    const {
+      handleCheck,
+      handleGetDriver,
+      handleCallList,
+      handleGetCallStatus
+    } = this;
     await handleCheck();
     const { userInfo } = this.state;
-    const type = !userInfo.position || userInfo.position === 0 ? 'passenger' : 'driver';
-    await handleGetCallStatus(type, userInfo.id)
-    
-    if(!userInfo.position || userInfo.position === 0) {
+    const type =
+      !userInfo.position || userInfo.position === 0 ? "passenger" : "driver";
+    await handleGetCallStatus(type, userInfo.id);
+
+    if (!userInfo.position || userInfo.position === 0) {
       await handleGetDriver();
-    }else {
+    } else {
       await handleCallList();
     }
   }
@@ -79,27 +96,33 @@ class Home extends React.Component {
   }
 
   handleGetCallStatus = (type, userId) => {
-    const userType = type === 'driver' ? 'driverId' : 'userId';
+    const userType = type === "driver" ? "driverId" : "userId";
     const data = {
       type: type,
       [userType]: userId
     };
-    console.log({data})
+    console.log({ data });
     axios({
-      method: 'post',
-      url: `${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/apis/v1/call/status`,
+      method: "post",
+      url: `${process.env.REACT_APP_SERVER_URL}:${
+        process.env.REACT_APP_SERVER_PORT
+      }/apis/v1/call/status`,
       data: data
-    }).then(res => {
-      console.log("handleGetCallStatus success : ", res);
-      if(type === 'passenger') {
-        this.setState({ isPassengerHome: res.data.status !== 2 ? true : false });
-      }else if(type === 'driver') {
-        this.setState({ isDriverHome: res.data.status === 1 ? true : false });
-      }
-    }).catch(err => {
-      console.log("handleGetCallStatus failure : ", err);
-    });
-  }
+    })
+      .then(res => {
+        console.log("handleGetCallStatus success : ", res);
+        if (type === "passenger") {
+          this.setState({
+            isPassengerHome: res.data.status !== 2 ? true : false
+          });
+        } else if (type === "driver") {
+          this.setState({ isDriverHome: res.data.status === 1 ? true : false });
+        }
+      })
+      .catch(err => {
+        console.log("handleGetCallStatus failure : ", err);
+      });
+  };
 
   handleCheck = async () => {
     const {
@@ -128,100 +151,122 @@ class Home extends React.Component {
   };
 
   handleGetDriver = async () => {
-      await axios({
-        method: 'get',
-        url: `${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/apis/v1/driver/list`
-      }).then(res => {
+    await axios({
+      method: "get",
+      url: `${process.env.REACT_APP_SERVER_URL}:${
+        process.env.REACT_APP_SERVER_PORT
+      }/apis/v1/driver/list`
+    })
+      .then(res => {
         this.setState({ drivers: res.data });
-      }).catch(err => {
-        console.log(err, 'error');
+      })
+      .catch(err => {
+        console.log(err, "error");
       });
-  }
+  };
 
   handleCallList = async () => {
     const { userInfo } = this.state;
 
     await axios({
-      method: 'post',
-      url: `${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/apis/v1/call/list`,
+      method: "post",
+      url: `${process.env.REACT_APP_SERVER_URL}:${
+        process.env.REACT_APP_SERVER_PORT
+      }/apis/v1/call/list`,
       data: { id: userInfo.id }
-    }).then(res => {
-      this.setState({ calls: res.data });
-      // console.log('call list success : ', res);
-    }).catch(err => {
-      console.log('call list failure : ', err);
-    });
-  }
+    })
+      .then(res => {
+        this.setState({ calls: res.data });
+        // console.log('call list success : ', res);
+      })
+      .catch(err => {
+        console.log("call list failure : ", err);
+      });
+  };
 
   handleCallRequest = async () => {
     const { userID, userInfo } = this.state;
 
     const data = {
-      driverId : userID,
+      driverId: userID,
       userId: userInfo.id,
-      sPoint: '',
-      destination: '',
-      price: 0,
+      sPoint: "",
+      destination: "",
+      price: 0
     };
 
-    await this.setState({ userID: '' });
+    await this.setState({ userID: "" });
     return axios({
-      method: 'post',
-      url: `${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/apis/v1/call/request`,
+      method: "post",
+      url: `${process.env.REACT_APP_SERVER_URL}:${
+        process.env.REACT_APP_SERVER_PORT
+      }/apis/v1/call/request`,
       data: data
-    }).then(res => {
-      console.log('call API success : ', res);
-      this.setState({ isPassengerHome: true });
-    }).catch(err => {
-      console.log('call API failure : ', err);
-    });
-  }
+    })
+      .then(res => {
+        console.log("call API success : ", res);
+        this.setState({ isPassengerHome: true });
+      })
+      .catch(err => {
+        console.log("call API failure : ", err);
+      });
+  };
 
   handleSelectUser = userID => () => {
     this.setState({ userID });
-  }
+  };
 
-  handleClick = async (e) => {
+  handleClick = async e => {
     const { userID, userInfo } = this.state;
     const { handleCallRequest, handleApproval } = this;
     // console.log(userInfo.position);
     e.preventDefault();
 
-    let userType = userInfo.position === 0 || !userInfo.position ? `운전자` : `탑승자`;
-    let confirmMsg = userInfo.position === 0 || !userInfo.position ? `${userID}님에게 호출을 요청하시겠습니까 ?` : `${userID}의 요청을 승낙 하시겠습니까 ?`;
-    if(userID === '') {
+    let userType =
+      userInfo.position === 0 || !userInfo.position ? `운전자` : `탑승자`;
+    let confirmMsg =
+      userInfo.position === 0 || !userInfo.position
+        ? `${userID}님에게 호출을 요청하시겠습니까 ?`
+        : `${userID}의 요청을 승낙 하시겠습니까 ?`;
+    if (userID === "") {
       alert(`${userType}를 선택하여 주십시오.`);
       return;
     }
 
-    if(window.confirm(confirmMsg)) {
-      userType === '운전자' ? await handleCallRequest() : await handleApproval();
+    if (window.confirm(confirmMsg)) {
+      userType === "운전자"
+        ? await handleCallRequest()
+        : await handleApproval();
     }
-  }
+  };
 
-  handleApproval = async (e) => {
+  handleApproval = async e => {
     const { userID, userInfo } = this.state;
     // console.log(userID, userInfo.id);
     const data = {
       driverId: userInfo.id,
       userId: userID
     };
-    
-    await axios({
-      method: 'put',
-      url: `${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/apis/v1/call/approval`,
-      data: data
-    }).then(res => {
-      // console.log(res);
-      this.setState({ isDriverHome: true });
-    }).catch(err => {
-      console.log(err);
-    });
-    await this.handleCallList();
-    await this.setState({ userID: '' });
-  }
 
-  handleReject = async (e) => {
+    await axios({
+      method: "put",
+      url: `${process.env.REACT_APP_SERVER_URL}:${
+        process.env.REACT_APP_SERVER_PORT
+      }/apis/v1/call/approval`,
+      data: data
+    })
+      .then(res => {
+        // console.log(res);
+        this.setState({ isDriverHome: true });
+      })
+      .catch(err => {
+        console.log(err);
+      });
+    await this.handleCallList();
+    await this.setState({ userID: "" });
+  };
+
+  handleReject = async e => {
     const { userID, userInfo } = this.state;
     e.preventDefault();
 
@@ -230,31 +275,42 @@ class Home extends React.Component {
       userId: userID
     };
 
-    if(userID === '') {
+    if (userID === "") {
       alert(`탑승자를 선택하여 주십시오.`);
       return;
     }
 
-    if(window.confirm(`${userID}의 요청을 거절 하시겠습니까?`)) {
+    if (window.confirm(`${userID}의 요청을 거절 하시겠습니까?`)) {
       // reject api
       await axios({
-        method: 'put',
-        url: `${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/apis/v1/call/reject`,
+        method: "put",
+        url: `${process.env.REACT_APP_SERVER_URL}:${
+          process.env.REACT_APP_SERVER_PORT
+        }/apis/v1/call/reject`,
         data: data
-      }).then(res => {
-        // console.log(res);
-      }).catch(err => {
-        console.log(err);
-      });
+      })
+        .then(res => {
+          // console.log(res);
+        })
+        .catch(err => {
+          console.log(err);
+        });
       await this.handleCallList();
     }
 
-    await this.setState({ userID: '' });
-  }
+    await this.setState({ userID: "" });
+  };
 
   render() {
-    const { userInfo, drivers, userID, calls, isPassengerHome, isDriverHome } = this.state;
-    console.log("Home.jsx : ", {isPassengerHome}, {isDriverHome});
+    const {
+      userInfo,
+      drivers,
+      userID,
+      calls,
+      isPassengerHome,
+      isDriverHome
+    } = this.state;
+    console.log("Home.jsx : ", { isPassengerHome }, { isDriverHome });
     // console.log('render drivers : ', drivers);
 
     return (
