@@ -6,7 +6,7 @@ import withStore from "../../lib/withStore";
 // fullpage
 import ReactFullpage from "@fullpage/react-fullpage";
 import "fullpage.js/vendors/scrolloverflow";
-import { searchCurrentRegisteredToken } from "../../lib/newFCM";
+import { searchCurrentRegisteredToken, messaging } from "../../lib/newFCM";
 // Component
 import OverView from "./OverView";
 import Drive from "./Drive";
@@ -83,8 +83,18 @@ class Home extends React.Component {
     } = this;
     await handleCheck();
     const { userInfo } = this.state;
+    const {
+      store: {
+        actions: { setToken }
+      }
+    } = this.props;
+
     const type =
       !userInfo.position || userInfo.position === 0 ? "passenger" : "driver";
+    const token = await searchCurrentRegisteredToken(messaging);
+
+    setToken(token);
+
     await handleGetCallStatus(type, userInfo.id);
 
     if (!userInfo.position || userInfo.position === 0) {
@@ -369,6 +379,7 @@ class Home extends React.Component {
       isDriverHome
     } = this.state;
     console.log("Home.jsx : ", { isPassengerHome }, { isDriverHome });
+    console.log(this.props);
     // console.log('render drivers : ', drivers);
 
     return (

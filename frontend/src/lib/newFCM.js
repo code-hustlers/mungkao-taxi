@@ -9,7 +9,7 @@ const config = {
   messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID
 };
 firebase.initializeApp(config);
-const messaging = firebase.messaging();
+export const messaging = firebase.messaging();
 console.log("TCL: init -> messaging", messaging);
 
 export const init = async () => {
