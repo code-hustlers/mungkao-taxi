@@ -51,8 +51,8 @@ const Drive = props => {
   const {
     userInfo,
     userID,
-    drivers,
-    calls,
+    drivers = [],
+    calls = [],
     handleSelectUser,
     handleClick,
     handleReject,
@@ -98,7 +98,7 @@ const Drive = props => {
     );
   });
 
-  return !isPassengerHome && !isDriverHome ? (
+  return !isPassengerHome && !isDriverHome && userInfo ? (
     <div>
       {!userInfo.position || userInfo.position === 0 ? (
         <div>
@@ -129,7 +129,7 @@ const Drive = props => {
     </div>
   ) : (
     <div>
-      {!userInfo.position || userInfo.position === 0 ? (
+      {userInfo && (!userInfo.position || userInfo.position === 0) ? (
         <Swing type="driver">
           <img src="/mungCar.png" alt="멍카" />
         </Swing>

@@ -19,7 +19,7 @@ export function useChk(defaultValue) {
 
   const onChange = e => {
     setValue(!value);
-  }
+  };
 
   return { value, onChange };
 }
