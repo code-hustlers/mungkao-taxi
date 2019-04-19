@@ -248,6 +248,7 @@ const callRoutes = (app, User, Call) => {
               id: driver.id,
               name: driver.name,
               status: driver.status,
+              token: driver.token,
               date: driver.create_date
             }
           );

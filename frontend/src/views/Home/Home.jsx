@@ -24,7 +24,7 @@ const fcmTest = async () => {
 const FullpageWrapper = props => (
   <ReactFullpage
     {...fullpageProps}
-    render={ () => {
+    render={() => {
       const {
         userInfo,
         drivers,
@@ -71,7 +71,8 @@ class Home extends React.Component {
     calls: [],
     userID: "",
     isPassengerHome: false,
-    isDriverHome: false
+    isDriverHome: false,
+    fcmToken: ""
   };
 
   async componentDidMount() {
@@ -197,7 +198,7 @@ class Home extends React.Component {
   };
 
   handleCallRequest = async () => {
-    const { userID, userInfo } = this.state;
+    const { userID, userInfo, fcmToken } = this.state;
 
     const data = {
       driverId: userID,
@@ -206,9 +207,17 @@ class Home extends React.Component {
       destination: "",
       price: 0
     };
+    const fcmData = {
+      to: fcmToken,
+      priority: "high",
+      notification: {
+        body: "fuck",
+        title: "FCM Message"
+      }
+    };
 
     await this.setState({ userID: "" });
-    return axios({
+    await axios({
       method: "post",
       url: `${process.env.REACT_APP_SERVER_URL}:${
         process.env.REACT_APP_SERVER_PORT
@@ -222,10 +231,26 @@ class Home extends React.Component {
       .catch(err => {
         console.log("call API failure : ", err);
       });
+    await axios({
+      method: "post",
+      url: "https://fcm.googleapis.com/fcm/send",
+      data: fcmData,
+      headers: {
+        Authorization:
+          "key=AAAAsRu70Yk:APA91bFb0Y-3eaAq3WaFexO7KzyvknIUbh2aEE-Hnay_Wb-KmimVzMZtdzWPkfg_HgkALbd_zf4ZC2E3kKGpKGFQhButNTl8ve-pnjnTyZynjblbABiKUpjWb2rN14_eJlbOSBRt_ZNX",
+        "Content-Type": "application/json"
+      }
+    })
+      .then(res => {
+        console.log(res);
+      })
+      .catch(err => {
+        console.log(err);
+      });
   };
 
-  handleSelectUser = userID => () => {
-    this.setState({ userID });
+  handleSelectUser = (userID, fcmToken) => () => {
+    this.setState({ userID, fcmToken });
   };
 
   handleClick = async e => {
