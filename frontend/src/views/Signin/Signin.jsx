@@ -8,12 +8,17 @@ import Input from "../../components/Input";
 import Button from "../../components/Button";
 import { CardForm } from "../../components/Card/CardForm";
 import Loading from "../../components/Loading";
-import { requestPermission } from "../../lib/newFCM";
+import {
+  requestPermission,
+  searchCurrentRegisteredToken,
+  messaging
+} from "../../lib/newFCM";
 class Signin extends React.Component {
   state = {
     id: "",
     pw: "",
-    loading: false
+    loading: false,
+    token: ""
   };
 
   handleSignin = async event => {
@@ -94,6 +99,15 @@ class Signin extends React.Component {
     }
   };
 
+  async componentDidMount() {
+    try {
+      const token = await searchCurrentRegisteredToken(messaging);
+      this.setState({ token });
+    } catch (error) {
+      this.setState({ token: JSON.stringify(error) });
+    }
+  }
+
   render() {
     const {
       handleSignin,
@@ -101,13 +115,15 @@ class Signin extends React.Component {
       handleChange,
       handleRequestPushNoti
     } = this;
-    const { id, pw, loading } = this.state;
+    const { id, pw, loading, token } = this.state;
 
     return (
       <Container>
         <Loading loading={loading} />
         <CardForm onSubmit={handleSignin}>
           <h1>Signin</h1>
+          <h2>Token</h2>
+          <p>{token}</p>
           <Input
             value={id}
             onChange={handleChange("id")}
