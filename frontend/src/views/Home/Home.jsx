@@ -94,7 +94,7 @@ class Home extends React.Component {
     const token = await searchCurrentRegisteredToken(messaging);
 
     setToken(token);
-
+    // didmount issue 리퀘스트 안날라감
     await handleGetCallStatus(type, userInfo.id);
 
     if (!userInfo.position || userInfo.position === 0) {
