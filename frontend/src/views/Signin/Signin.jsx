@@ -18,11 +18,11 @@ class Signin extends React.Component {
     id: "",
     pw: "",
     loading: false,
-    token: ""
+    fcmToken: ""
   };
 
   handleSignin = async event => {
-    const { id, pw } = this.state;
+    const { id, pw, fcmToken } = this.state;
     const {
       cookies,
       history: { push },
@@ -43,7 +43,8 @@ class Signin extends React.Component {
           }/apis/v1/login`,
           {
             id,
-            pw
+            pw,
+            token: fcmToken
           }
         )
         .then(res => res)
@@ -101,10 +102,10 @@ class Signin extends React.Component {
 
   async componentDidMount() {
     try {
-      const token = await searchCurrentRegisteredToken(messaging);
-      this.setState({ token });
+      const fcmToken = await searchCurrentRegisteredToken(messaging);
+      this.setState({ fcmToken });
     } catch (error) {
-      this.setState({ token: JSON.stringify(error) });
+      this.setState({ fcmToken: JSON.stringify(error) });
     }
   }
 
@@ -115,7 +116,7 @@ class Signin extends React.Component {
       handleChange,
       handleRequestPushNoti
     } = this;
-    const { id, pw, loading, token } = this.state;
+    const { id, pw, loading, fcmToken } = this.state;
 
     return (
       <Container>
@@ -123,7 +124,7 @@ class Signin extends React.Component {
         <CardForm onSubmit={handleSignin}>
           <h1>Signin</h1>
           <h2>Token</h2>
-          <p>{token}</p>
+          <p>{fcmToken}</p>
           <Input
             value={id}
             onChange={handleChange("id")}

@@ -8,7 +8,8 @@ const userSchema = new Schema({
   name: String,
   position: Number, // 0: 탑승자 1: 운전자
   status: Number, // 0: 대기, 1: 운전,탑승
-  create_date: { type: Date, default: Date.now() }
+  create_date: { type: Date, default: Date.now() },
+  token: { type: String, default: "" }
 });
 
 module.exports = mongoose.model("user", userSchema);
