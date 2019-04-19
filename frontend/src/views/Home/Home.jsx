@@ -83,6 +83,7 @@ class Home extends React.Component {
     } = this;
     await handleCheck();
     const { userInfo } = this.state;
+    console.log('didmount : ', userInfo)
     const {
       store: {
         actions: { setToken }
@@ -96,6 +97,8 @@ class Home extends React.Component {
     setToken(token);
 
     await handleGetCallStatus(type, userInfo.id);
+    // ? 여기까지 안내려오는데 확인좀
+    console.log('didmount : ', this.state.isDriverHomem, this.state.isPassengerHome);
 
     if (!userInfo.position || userInfo.position === 0) {
       await handleGetDriver();
@@ -378,7 +381,7 @@ class Home extends React.Component {
       isPassengerHome,
       isDriverHome
     } = this.state;
-    console.log("Home.jsx : ", { isPassengerHome }, { isDriverHome });
+    console.log("Home.jsx : ", { isPassengerHome }, { isDriverHome }, {userInfo}, {drivers}, {calls});
     console.log(this.props);
     // console.log('render drivers : ', drivers);
 
