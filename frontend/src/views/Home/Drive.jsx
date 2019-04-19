@@ -60,7 +60,7 @@ const Drive = props => {
     isDriverHome,
     handleArrive
   } = props;
-  console.log({ isPassengerHome }, { isDriverHome });
+  // console.log({ isPassengerHome }, { isDriverHome });
 
   const driverElem = drivers.map(el => {
     return el.status === 0 ? (

@@ -24,7 +24,7 @@ const fcmTest = async () => {
 const FullpageWrapper = props => (
   <ReactFullpage
     {...fullpageProps}
-    render={({ state, fullpageApi }) => {
+    render={ () => {
       const {
         userInfo,
         drivers,
@@ -348,7 +348,7 @@ class Home extends React.Component {
       driverId: userInfo.id,
       userId: userId
     };
-    console.log({ arriveParam });
+    // console.log({ arriveParam });
 
     await axios({
       method: "post",
@@ -378,8 +378,8 @@ class Home extends React.Component {
       isPassengerHome,
       isDriverHome
     } = this.state;
-    console.log("Home.jsx : ", { isPassengerHome }, { isDriverHome });
-    console.log(this.props);
+    // console.log("Home.jsx : ", { isPassengerHome }, { isDriverHome });
+    // console.log(this.props);
     // console.log('render drivers : ', drivers);
 
     return (
