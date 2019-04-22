@@ -105,7 +105,6 @@ class Home extends React.Component {
     } else {
       await handleCallList();
     }
-    handlePostMsg('testToken', 'MUNGKAO', 'HI ~');
   }
   componentWillUnmount() {
     this.setState({ isPassengerHome: false, isDriverHome: false });
@@ -228,7 +227,7 @@ class Home extends React.Component {
       .catch(err => {
         console.log("call API failure : ", err);
       });
-      await handlePostMsg(fcmToken, 'MUNGKAO', `${userInfo.id}님에게 콜 요청이 왔습니다~`);
+      await handlePostMsg(fcmToken, 'MUNGKAO', `${userInfo.name}님에게 콜 요청이 왔습니다~`);
   };
 
   handleSelectUser = (userID, fcmToken) => () => {
@@ -281,7 +280,7 @@ class Home extends React.Component {
       .catch(err => {
         console.log(err);
       });
-    await handlePostMsg(fcmToken, 'MUNGKAO', `${userInfo.id}님이 승인하였습니다.`);
+    await handlePostMsg(fcmToken, 'MUNGKAO', `${userInfo.name}님이 승인하였습니다.`);
     await this.handleCallList();
     await this.setState({ userID: "" });
   };
@@ -315,7 +314,7 @@ class Home extends React.Component {
         .catch(err => {
           console.log(err);
         });
-      await handlePostMsg(fcmToken, 'MUNGKAO', `${userInfo.id}님이 거절하였습니다.`);
+      await handlePostMsg(fcmToken, 'MUNGKAO', `${userInfo.name}님이 거절하였습니다.`);
       await this.handleCallList();
     }
 
