@@ -80,6 +80,7 @@ const Drive = props => {
   });
 
   const callElem = calls.map((el, idx) => {
+    // console.log({el});
     if (el.sPoint === "") {
       el.sPoint = "여기서부터 ";
     }
@@ -89,7 +90,7 @@ const Drive = props => {
     return (
       <CardForm key={idx}>
         <Div
-          onClick={handleSelectUser(el.userId)}
+          onClick={handleSelectUser(el.userId, el.token)}
           userID={userID}
           id={el.userId}
         >

@@ -116,15 +116,15 @@ class Signin extends React.Component {
       handleChange,
       handleRequestPushNoti
     } = this;
-    const { id, pw, loading, fcmToken } = this.state;
+    const { id, pw, loading } = this.state;
 
     return (
       <Container>
         <Loading loading={loading} />
         <CardForm onSubmit={handleSignin}>
           <h1>Signin</h1>
-          <h2>Token</h2>
-          <p>{fcmToken}</p>
+          {/* <h2>Token</h2>
+          <p>{fcmToken}</p> */}
           <Input
             value={id}
             onChange={handleChange("id")}

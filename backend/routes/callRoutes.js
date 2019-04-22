@@ -139,12 +139,14 @@ const callRoutes = (app, User, Call) => {
       (err, calls) => {
         if (err) throw err;
         let customCalls = calls.map(call => {
+          console.log(call);
           return Object.assign({
             userId: call.userId,
             sPoint: call.sPoint,
             destination: call.destination,
             price: call.price,
-            date: call.call_date
+            date: call.call_date,
+            token: call.token
           });
         });
         console.log("call List : ", customCalls);
@@ -160,6 +162,18 @@ const callRoutes = (app, User, Call) => {
       }
     );
   });
+
+  // GET user Token
+  app.post(`${DEFAULT_API}/user/token`, (req, res) => {
+    User.find({ id: req.body.id }, (err, user) => {
+      if(err) throw err;
+      try {
+        res.status(200).json({ fcmToken: user.token });
+      } catch (error) {
+        res.status(401).json({ result: SERVER_RESULT_FAILURE, msg: 'Get token err' });
+      }
+    })
+  })
 
   // POST Insert call info
   app.post(`${DEFAULT_API}/call/request`, (req, res) => {
@@ -190,7 +204,8 @@ const callRoutes = (app, User, Call) => {
                 destination: req.body.destination,
                 price: req.body.price,
                 call_date: NOW,
-                status: CALL_STATUS_READY // 0 대기, 1 승인, 2 거절
+                status: CALL_STATUS_READY, // 0 대기, 1 승인, 2 거절
+                token: req.body.token
               });
               if (data.length === 1) {
                 console.log("call List update");
@@ -201,7 +216,8 @@ const callRoutes = (app, User, Call) => {
                     destination: req.body.destination,
                     price: req.body.price,
                     call_date: NOW,
-                    status: CALL_STATUS_READY
+                    status: CALL_STATUS_READY,
+                    token: req.body.token
                   }
                 );
                 res
