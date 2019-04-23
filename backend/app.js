@@ -1,3 +1,6 @@
+import fs from "fs";
+import http from "http";
+import https from "https";
 import dotenv from "dotenv";
 import exprees from "express";
 import bodyParser from "body-parser";
@@ -12,6 +15,16 @@ import Call from "./models/call";
 import { authRoutes, callRoutes } from "./routes";
 
 const app = exprees();
+
+var privateKey = fs.readFileSync("./localhost-privkey.pem", "utf8");
+var certificate = fs.readFileSync("./localhost-cert.pem", "utf8");
+var credentials = { key: privateKey, cert: certificate };
+
+var httpServer = http.createServer(app);
+var httpsServer = https.createServer(credentials, app);
+
+httpServer.listen(8080);
+httpsServer.listen(8443);
 
 dotenv.config();
 
