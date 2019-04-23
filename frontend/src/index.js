@@ -5,6 +5,8 @@ import App from "./App";
 import { init } from "./lib/newFCM";
 // import { initializeFirebase, requestPermission } from "./lib/pushNotifications";
 // import { requestPermission } from "./lib/pushNotifications";
+import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick-theme.css";
 
 ReactDOM.render(<App />, document.getElementById("root"));
 

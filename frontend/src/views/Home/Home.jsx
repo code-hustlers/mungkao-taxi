@@ -349,7 +349,7 @@ class Home extends React.Component {
         userId = res.data.userId;
       })
       .catch(err => {
-        console.log(err);
+        console.log('call/info err: ', err);
       });
 
     const arriveParam = {
@@ -372,9 +372,11 @@ class Home extends React.Component {
           this.setState({ isDriverHome: false });
         }
       })
-      .catch(err => {});
+      .catch(err => {
+        console.log('call/arrive err: ', err);
+      });
 
-    (await flag) ? this.handleGetDriver() : this.handleCallList();
+    flag ? await this.handleGetDriver() : await this.handleCallList();
   };
 
   render() {

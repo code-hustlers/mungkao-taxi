@@ -2,6 +2,7 @@ import React from "react";
 import Button from "../../components/Button";
 import { CardForm } from "../../components/Card/CardForm";
 import styled, { keyframes } from "styled-components";
+import Slider from 'react-slick';
 
 const Title = styled.div`
   text-align: center;
@@ -69,6 +70,7 @@ const Drive = props => {
           onClick={handleSelectUser(el.id, el.token)}
           userID={userID}
           id={el.id}
+          style={{width:'65%'}}
         >
           <h2>{el.id}</h2>
           <span>{el.name}</span>
@@ -93,6 +95,7 @@ const Drive = props => {
           onClick={handleSelectUser(el.userId, el.token)}
           userID={userID}
           id={el.userId}
+          style={{width:'65%'}}
         >
           <h2>{el.userId}</h2>
           <p>{`${el.sPoint} ~ ${el.destination}`}</p>
@@ -103,12 +106,22 @@ const Drive = props => {
     );
   });
 
+  const settings = {
+      infinite: true,
+      slidesToShow: 3,
+      slidesToScroll: 1,
+      vertical: true,
+      verticalSwiping: true,
+  };
+
   return !isPassengerHome && !isDriverHome ? (
     <div>
       {!userInfo.position || userInfo.position === 0 ? (
         <div>
           <Title>마음에 드는 운전자를 선택하세요:D</Title>
-          {driverElem}
+          <Slider {...settings}>
+            {driverElem}
+          </Slider>
           <CardForm>
             <Button onClick={handleClick}>call</Button>
           </CardForm>
@@ -116,7 +129,9 @@ const Drive = props => {
       ) : (
         <div>
           <Title>당신이 요청받은 콜 리스트 입니다:D</Title>
-          {callElem}
+          <Slider {...settings}>
+            {callElem}
+          </Slider>
           <Button
             onClick={handleClick}
             style={{ width: "45%", margin: "auto 2.5%" }}
