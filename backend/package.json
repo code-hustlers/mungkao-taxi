@@ -1,36 +1,36 @@
 {
-    "name": "mungkao",
-    "version": "1.0.0",
-    "description": "",
-    "main": "app.js",
-    "scripts": {
-        "start": "nodemon app.js --exec babel-node",
-        "start_b": "forever start app.js",
-        "stop_b": "forever stop app.js"
-    },
-    "author": "",
-    "license": "ISC",
-    "dependencies": {
-        "babel-cli": "^6.26.0",
-        "babel-preset-env": "^1.7.0",
-        "bcryptjs": "^2.4.3",
-        "body-parser": "^1.18.3",
-        "cors": "^2.8.4",
-        "dotenv": "^6.2.0",
-        "express": "^4.16.3",
-        "express-session": "^1.15.6",
-        "forever": "^1.0.0",
-        "jsonwebtoken": "^8.3.0",
-        "moment": "^2.24.0",
-        "mongodb": "^3.1.13",
-        "mongoose": "^5.2.10",
-        "morgan": "^1.9.0",
-        "nodemon": "^1.18.9",
-        "web-push": "^3.3.3"
-    },
-    "babel": {
-        "presets": [
-            "env"
-        ]
-    }
+  "name": "mungkao",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js --exec babel-node",
+    "start_b": "forever start app.js --exec babel-node",
+    "stop_b": "forever stop app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.4",
+    "dotenv": "^6.2.0",
+    "express": "^4.16.3",
+    "express-session": "^1.15.6",
+    "forever": "^1.0.0",
+    "jsonwebtoken": "^8.3.0",
+    "moment": "^2.24.0",
+    "mongodb": "^3.1.13",
+    "mongoose": "^5.2.10",
+    "morgan": "^1.9.0",
+    "nodemon": "^1.18.9",
+    "web-push": "^3.3.3"
+  },
+  "babel": {
+    "presets": [
+      "env"
+    ]
+  }
 }
