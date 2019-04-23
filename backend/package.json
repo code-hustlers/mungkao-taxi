@@ -6,7 +6,9 @@
   "scripts": {
     "start": "nodemon app.js --exec babel-node",
     "start_b": "forever start app.js --exec babel-node",
-    "stop_b": "forever stop app.js"
+    "stop_b": "forever stop app.js",
+    "pem_gen": "openssl req -x509 -newkey rsa:2048 -nodes -sha256 -subj '/CN=localhost'     -keyout localhost-privkey.pem -out localhost-cert.pem",
+    "pkill": "pkill -ef -9 node"
   },
   "author": "",
   "license": "ISC",

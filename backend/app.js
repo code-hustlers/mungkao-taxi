@@ -1,5 +1,5 @@
 import fs from "fs";
-import http from "http";
+// import http from "http";
 import https from "https";
 import dotenv from "dotenv";
 import express from "express";
@@ -16,15 +16,18 @@ import { authRoutes, callRoutes } from "./routes";
 
 const app = express();
 
-var privateKey = fs.readFileSync("./localhost-privkey.pem", "utf8");
-var certificate = fs.readFileSync("./localhost-cert.pem", "utf8");
-var credentials = { key: privateKey, cert: certificate };
+const privateKey = fs.readFileSync("./localhost-privkey.pem", "utf8");
+const certificate = fs.readFileSync("./localhost-cert.pem", "utf8");
+const credentials = { key: privateKey, cert: certificate };
 
-var httpServer = http.createServer(app);
-var httpsServer = https.createServer(credentials, app);
+// const httpServer = http.createServer(app);
+const httpsServer = https.createServer(credentials, app);
+const httpsPort = 8443;
 
-httpServer.listen(8080);
-httpsServer.listen(8443);
+// httpServer.listen(8080);
+httpsServer.listen(httpsPort, () => {
+  console.log(`HTTPS Server listen at https://localhost:${httpsPort}`);
+});
 
 dotenv.config();
 
