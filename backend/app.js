@@ -2,7 +2,7 @@ import fs from "fs";
 import http from "http";
 import https from "https";
 import dotenv from "dotenv";
-import exprees from "express";
+import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import morgan from "morgan";
@@ -14,7 +14,7 @@ import Call from "./models/call";
 // Routes
 import { authRoutes, callRoutes } from "./routes";
 
-const app = exprees();
+const app = express();
 
 var privateKey = fs.readFileSync("./localhost-privkey.pem", "utf8");
 var certificate = fs.readFileSync("./localhost-cert.pem", "utf8");
