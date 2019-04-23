@@ -13,13 +13,14 @@ import {
   searchCurrentRegisteredToken,
   messaging
 } from "../../lib/newFCM";
-import { StoreConsumer } from "../../store/Store";
+import urlB64ToUint8Array from "../../lib/urlB64ToUint8Array";
 class Signin extends React.Component {
   state = {
     id: "",
     pw: "",
     loading: false,
-    fcmToken: ""
+    fcmToken: "",
+    pushSubscriptionObject: null
   };
 
   handleSignin = async event => {
@@ -110,6 +111,37 @@ class Signin extends React.Component {
     } catch (error) {
       this.setState({ fcmToken: JSON.stringify(error) });
     }
+
+    console.log(
+      "TCL: App -> process.env.REACT_APP_PUBLIC_VAPID_KEY",
+      process.env.REACT_APP_PUBLIC_VAPID_KEY
+    );
+
+    if ("serviceWorker" in navigator && "PushManager" in window) {
+      navigator.serviceWorker
+        .register("/push-notification-sw.js")
+        .then(swReg => {
+          console.log("SW Registered: ", swReg);
+          Notification.requestPermission().then(permission => {
+            if (permission === "granted") {
+              console.log("Permission: ", permission);
+              swReg.pushManager
+                .subscribe({
+                  userVisibleOnly: true,
+                  applicationServerKey: urlB64ToUint8Array(
+                    process.env.REACT_APP_PUBLIC_VAPID_KEY
+                  )
+                })
+                .then(pushSubscriptionObject => {
+                  this.setState({ pushSubscriptionObject });
+                  console.log(pushSubscriptionObject);
+                })
+                .catch(error => console.log("TCL: App -> error", error));
+            }
+          });
+        })
+        .catch(error => console.error("Can't register SW: ", error));
+    }
   }
 
   render() {
@@ -126,8 +158,8 @@ class Signin extends React.Component {
         <Loading loading={loading} />
         <CardForm onSubmit={handleSignin}>
           <h1>Signin</h1>
-          {/* <h2>Token</h2>
-          <p>{fcmToken}</p> */}
+          <h2>Token</h2>
+          <p>{fcmToken}</p>
           <Input
             value={id}
             onChange={handleChange("id")}
@@ -146,7 +178,7 @@ class Signin extends React.Component {
           {/* <Button type="button" onClick={askForPermissioToReceiveNotifications}> */}
           <Button
             type="button"
-            // onClick={handleRequestPushNoti(this.props.store.pushSubscriptionObject)}
+            onClick={handleRequestPushNoti(this.state.pushSubscriptionObject)}
           >
             Request Push Noti
           </Button>
