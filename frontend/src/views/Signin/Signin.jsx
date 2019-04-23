@@ -13,6 +13,7 @@ import {
   searchCurrentRegisteredToken,
   messaging
 } from "../../lib/newFCM";
+import { StoreConsumer } from "../../store/Store";
 class Signin extends React.Component {
   state = {
     id: "",
@@ -76,23 +77,25 @@ class Signin extends React.Component {
     this.setState({ [name]: event.target.value });
   };
 
-  handleRequestPushNoti = async () => {
+  handleRequestPushNoti = pushSubscriptionObject => async () => {
+    console.log("TCL: pushSubscriptionObject", pushSubscriptionObject);
     this.setState({ loading: true });
     try {
       requestPermission();
       // const subscription = await requestPermission();
-      // axios
-      //   .post(
-      //     `${process.env.REACT_APP_SERVER_URL}:${
-      //       process.env.REACT_APP_SERVER_PORT
-      //     }/push`,
-      //     {
-      //       data: "5555",
-      //       subscription
-      //     }
-      //   )
-      //   .then(res => res)
-      //   .catch(error => console.error(error));
+      // console.log("TCL: handleRequestPushNoti -> subscription", subscription);
+      axios
+        .post(
+          `${process.env.REACT_APP_SERVER_URL}:${
+            process.env.REACT_APP_SERVER_PORT
+          }/push`,
+          {
+            data: "5555",
+            subscription: pushSubscriptionObject
+          }
+        )
+        .then(res => res)
+        .catch(error => console.error(error));
     } catch (error) {
       console.error(error);
     } finally {
@@ -117,7 +120,7 @@ class Signin extends React.Component {
       handleRequestPushNoti
     } = this;
     const { id, pw, loading, fcmToken } = this.state;
-
+    console.log(this.props);
     return (
       <Container>
         <Loading loading={loading} />
@@ -141,7 +144,10 @@ class Signin extends React.Component {
             Signup
           </Button>
           {/* <Button type="button" onClick={askForPermissioToReceiveNotifications}> */}
-          <Button type="button" onClick={handleRequestPushNoti}>
+          <Button
+            type="button"
+            // onClick={handleRequestPushNoti(this.props.store.pushSubscriptionObject)}
+          >
             Request Push Noti
           </Button>
         </CardForm>
@@ -150,4 +156,4 @@ class Signin extends React.Component {
   }
 }
 
-export default withCookies(withRouter(withStore(Signin)));
+export default withStore(withCookies(withRouter(Signin)));
