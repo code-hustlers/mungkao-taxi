@@ -126,8 +126,8 @@ class Signin extends React.Component {
         <Loading loading={loading} />
         <CardForm onSubmit={handleSignin}>
           <h1>Signin</h1>
-          <h2>Token</h2>
-          <p>{fcmToken}</p>
+          {/* <h2>Token</h2>
+          <p>{fcmToken}</p> */}
           <Input
             value={id}
             onChange={handleChange("id")}

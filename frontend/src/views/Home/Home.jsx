@@ -10,6 +10,8 @@ import { searchCurrentRegisteredToken, messaging } from "../../lib/newFCM";
 // Component
 import OverView from "./OverView";
 import Drive from "./Drive";
+// FCM
+import { handlePostMsg } from '../../utils';
 
 const fullpageProps = {
   scrollOverflow: true,
@@ -190,7 +192,7 @@ class Home extends React.Component {
     })
       .then(res => {
         this.setState({ calls: res.data });
-        // console.log('call list success : ', res);
+        console.log('call list success : ', res);
       })
       .catch(err => {
         console.log("call list failure : ", err);
@@ -205,16 +207,10 @@ class Home extends React.Component {
       userId: userInfo.id,
       sPoint: "",
       destination: "",
-      price: 0
+      price: 0,
+      token: userInfo.token
     };
-    const fcmData = {
-      to: fcmToken,
-      priority: "high",
-      notification: {
-        body: "fuck",
-        title: "FCM Message"
-      }
-    };
+    // console.log('call request data : ', data, {userInfo});
 
     await this.setState({ userID: "" });
     await axios({
@@ -231,22 +227,7 @@ class Home extends React.Component {
       .catch(err => {
         console.log("call API failure : ", err);
       });
-    await axios({
-      method: "post",
-      url: "https://fcm.googleapis.com/fcm/send",
-      data: fcmData,
-      headers: {
-        Authorization:
-          "key=AAAAsRu70Yk:APA91bFb0Y-3eaAq3WaFexO7KzyvknIUbh2aEE-Hnay_Wb-KmimVzMZtdzWPkfg_HgkALbd_zf4ZC2E3kKGpKGFQhButNTl8ve-pnjnTyZynjblbABiKUpjWb2rN14_eJlbOSBRt_ZNX",
-        "Content-Type": "application/json"
-      }
-    })
-      .then(res => {
-        console.log(res);
-      })
-      .catch(err => {
-        console.log(err);
-      });
+      await handlePostMsg(fcmToken, 'MUNGKAO', `${userInfo.name}님에게 콜 요청이 왔습니다~`);
   };
 
   handleSelectUser = (userID, fcmToken) => () => {
@@ -256,7 +237,7 @@ class Home extends React.Component {
   handleClick = async e => {
     const { userID, userInfo } = this.state;
     const { handleCallRequest, handleApproval } = this;
-    // console.log(userInfo.position);
+    console.log(userInfo);
     e.preventDefault();
 
     let userType =
@@ -278,7 +259,7 @@ class Home extends React.Component {
   };
 
   handleApproval = async e => {
-    const { userID, userInfo } = this.state;
+    const { userID, userInfo, fcmToken } = this.state;
     // console.log(userID, userInfo.id);
     const data = {
       driverId: userInfo.id,
@@ -299,12 +280,13 @@ class Home extends React.Component {
       .catch(err => {
         console.log(err);
       });
+    await handlePostMsg(fcmToken, 'MUNGKAO', `${userInfo.name}님이 승인하였습니다.`);
     await this.handleCallList();
     await this.setState({ userID: "" });
   };
 
   handleReject = async e => {
-    const { userID, userInfo } = this.state;
+    const { userID, userInfo, fcmToken } = this.state;
     e.preventDefault();
 
     const data = {
@@ -332,6 +314,7 @@ class Home extends React.Component {
         .catch(err => {
           console.log(err);
         });
+      await handlePostMsg(fcmToken, 'MUNGKAO', `${userInfo.name}님이 거절하였습니다.`);
       await this.handleCallList();
     }
 
@@ -366,7 +349,7 @@ class Home extends React.Component {
         userId = res.data.userId;
       })
       .catch(err => {
-        console.log(err);
+        console.log('call/info err: ', err);
       });
 
     const arriveParam = {
@@ -389,9 +372,11 @@ class Home extends React.Component {
           this.setState({ isDriverHome: false });
         }
       })
-      .catch(err => {});
+      .catch(err => {
+        console.log('call/arrive err: ', err);
+      });
 
-    (await flag) ? this.handleGetDriver() : this.handleCallList();
+    flag ? await this.handleGetDriver() : await this.handleCallList();
   };
 
   render() {

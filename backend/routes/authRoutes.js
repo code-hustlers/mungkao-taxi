@@ -75,7 +75,8 @@ const authRoutes = (app, jwt, User) => {
             id: user[0].id,
             name: user[0].name,
             position: user[0].position,
-            status: user[0].status
+            status: user[0].status,
+            token: user[0].token
           },
           secret,
           {
