@@ -40,6 +40,8 @@ app.all("/*", function(req, res, next) {
   next();
 });
 
+app.use("/static", express.static("build"));
+
 app.use(
   session({
     secret: "MuNgkaOSessIOn",
