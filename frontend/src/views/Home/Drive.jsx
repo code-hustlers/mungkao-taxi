@@ -12,7 +12,7 @@ const Title = styled.div`
 
 const Div = styled.div`
   border: 2px solid #eee;
-  padding: 0 3rem;
+  padding: 0 1rem;
   &:hover {
     background: black;
     color: #fff;
@@ -22,6 +22,19 @@ const Div = styled.div`
       ? `background: black;
     color: #fff;`
       : null}
+`;
+
+const DownIcon = styled.img.attrs({src: '/expand.png'})`
+    // position: absolute;
+    // top: 90%;
+    width: 1rem;
+    height: 1rem;
+`;
+
+const Span = styled.div`
+    text-align: center;
+    font-weight: 400;
+    color: red;
 `;
 
 const swing = keyframes`
@@ -70,7 +83,7 @@ const Drive = props => {
           onClick={handleSelectUser(el.id, el.token)}
           userID={userID}
           id={el.id}
-          style={{width:'65%'}}
+          style={{width:'80%'}}
         >
           <h2>{el.id}</h2>
           <span>{el.name}</span>
@@ -95,7 +108,7 @@ const Drive = props => {
           onClick={handleSelectUser(el.userId, el.token)}
           userID={userID}
           id={el.userId}
-          style={{width:'65%'}}
+          style={{width:'80%'}}
         >
           <h2>{el.userId}</h2>
           <p>{`${el.sPoint} ~ ${el.destination}`}</p>
@@ -107,11 +120,10 @@ const Drive = props => {
   });
 
   const settings = {
-      infinite: true,
       slidesToShow: 3,
-      slidesToScroll: 1,
+      slidesToScroll: 3,
       vertical: true,
-      verticalSwiping: true,
+      verticalSwiping: true
   };
 
   return !isPassengerHome && !isDriverHome ? (
@@ -119,9 +131,10 @@ const Drive = props => {
       {!userInfo.position || userInfo.position === 0 ? (
         <div>
           <Title>마음에 드는 운전자를 선택하세요:D</Title>
-          <Slider {...settings}>
+          <Slider {...settings}> {/* 드라이브 섹션에서 새로고침시 슬라이드 안그려짐, absolute, top prop 스타일 주면 되긴 하는데.. */}
             {driverElem}
           </Slider>
+          <Span>아래로 스와이프 하세요. <DownIcon/></Span>
           <CardForm>
             <Button onClick={handleClick}>call</Button>
           </CardForm>
@@ -132,6 +145,7 @@ const Drive = props => {
           <Slider {...settings}>
             {callElem}
           </Slider>
+          <Span>아래로 스와이프 하세요. <DownIcon/></Span>
           <Button
             onClick={handleClick}
             style={{ width: "45%", margin: "auto 2.5%" }}
