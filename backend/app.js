@@ -8,6 +8,7 @@ import mongoose from "mongoose";
 import morgan from "morgan";
 import jwt from "jsonwebtoken";
 import session from "express-session";
+import path from 'path';
 // model import
 import User from "./models/user";
 import Call from "./models/call";
@@ -43,7 +44,8 @@ app.all("/*", function(req, res, next) {
   next();
 });
 
-app.use("/static", express.static("build"));
+// app.use("/static", express.static("build"));
+app.use(express.static(path.join(__dirname, "../frontend/build")));
 
 app.use(
   session({
