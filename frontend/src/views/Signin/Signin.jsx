@@ -13,12 +13,14 @@ import {
   searchCurrentRegisteredToken,
   messaging
 } from "../../lib/newFCM";
+import urlB64ToUint8Array from "../../lib/urlB64ToUint8Array";
 class Signin extends React.Component {
   state = {
     id: "",
     pw: "",
     loading: false,
-    fcmToken: ""
+    fcmToken: "",
+    pushSubscriptionObject: null
   };
 
   handleSignin = async event => {
@@ -76,23 +78,25 @@ class Signin extends React.Component {
     this.setState({ [name]: event.target.value });
   };
 
-  handleRequestPushNoti = async () => {
+  handleRequestPushNoti = pushSubscriptionObject => async () => {
+    console.log("TCL: pushSubscriptionObject", pushSubscriptionObject);
     this.setState({ loading: true });
     try {
       requestPermission();
       // const subscription = await requestPermission();
-      // axios
-      //   .post(
-      //     `${process.env.REACT_APP_SERVER_URL}:${
-      //       process.env.REACT_APP_SERVER_PORT
-      //     }/push`,
-      //     {
-      //       data: "5555",
-      //       subscription
-      //     }
-      //   )
-      //   .then(res => res)
-      //   .catch(error => console.error(error));
+      // console.log("TCL: handleRequestPushNoti -> subscription", subscription);
+      axios
+        .post(
+          `${process.env.REACT_APP_SERVER_URL}:${
+            process.env.REACT_APP_SERVER_PORT
+          }/push`,
+          {
+            data: "5555",
+            subscription: pushSubscriptionObject
+          }
+        )
+        .then(res => res)
+        .catch(error => console.error(error));
     } catch (error) {
       console.error(error);
     } finally {
@@ -107,6 +111,37 @@ class Signin extends React.Component {
     } catch (error) {
       this.setState({ fcmToken: JSON.stringify(error) });
     }
+
+    console.log(
+      "TCL: App -> process.env.REACT_APP_PUBLIC_VAPID_KEY",
+      process.env.REACT_APP_PUBLIC_VAPID_KEY
+    );
+
+    if ("serviceWorker" in navigator && "PushManager" in window) {
+      navigator.serviceWorker
+        .register("/push-notification-sw.js")
+        .then(swReg => {
+          console.log("SW Registered: ", swReg);
+          Notification.requestPermission().then(permission => {
+            if (permission === "granted") {
+              console.log("Permission: ", permission);
+              swReg.pushManager
+                .subscribe({
+                  userVisibleOnly: true,
+                  applicationServerKey: urlB64ToUint8Array(
+                    process.env.REACT_APP_PUBLIC_VAPID_KEY
+                  )
+                })
+                .then(pushSubscriptionObject => {
+                  this.setState({ pushSubscriptionObject });
+                  console.log(pushSubscriptionObject);
+                })
+                .catch(error => console.log("TCL: App -> error", error));
+            }
+          });
+        })
+        .catch(error => console.error("Can't register SW: ", error));
+    }
   }
 
   render() {
@@ -116,15 +151,15 @@ class Signin extends React.Component {
       handleChange,
       handleRequestPushNoti
     } = this;
-    const { id, pw, loading } = this.state;
-
+    const { id, pw, loading, fcmToken } = this.state;
+    console.log(this.props);
     return (
       <Container>
         <Loading loading={loading} />
         <CardForm onSubmit={handleSignin}>
           <h1>Signin</h1>
-          {/* <h2>Token</h2>
-          <p>{fcmToken}</p> */}
+          <h2>Token</h2>
+          <p>{fcmToken}</p>
           <Input
             value={id}
             onChange={handleChange("id")}
@@ -141,7 +176,10 @@ class Signin extends React.Component {
             Signup
           </Button>
           {/* <Button type="button" onClick={askForPermissioToReceiveNotifications}> */}
-          <Button type="button" onClick={handleRequestPushNoti}>
+          <Button
+            type="button"
+            onClick={handleRequestPushNoti(this.state.pushSubscriptionObject)}
+          >
             Request Push Noti
           </Button>
         </CardForm>
@@ -150,4 +188,4 @@ class Signin extends React.Component {
   }
 }
 
-export default withCookies(withRouter(withStore(Signin)));
+export default withStore(withCookies(withRouter(Signin)));

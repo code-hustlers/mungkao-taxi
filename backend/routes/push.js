@@ -1,13 +1,13 @@
 const webpush = require("web-push");
 
-function pushMunkao(pushSubscription) {
-  console.log("TCL: pushMunkao -> pushSubscription", pushSubscription);
+function pushMungkao(pushSubscription) {
+  console.log("TCL: pushMungkao -> pushSubscription", pushSubscription);
   // VAPID keys should only be generated only once.
   const vapidKeys = webpush.generateVAPIDKeys();
 
-  const { API_KEY } = process.env;
+  const { SERVER_KEY } = process.env;
 
-  webpush.setGCMAPIKey(API_KEY);
+  webpush.setGCMAPIKey(SERVER_KEY);
   webpush.setVapidDetails(
     "matilto:qvil1127@gmail.com",
     vapidKeys.publicKey,
@@ -27,6 +27,6 @@ module.exports = app => {
     const { subscription } = req.body;
     console.log("TCL: req.body", req.body);
     res.send("Success Push Request!");
-    pushMunkao(subscription);
+    pushMungkao(subscription);
   });
 };

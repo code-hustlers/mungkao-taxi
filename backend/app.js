@@ -1,5 +1,8 @@
+import fs from "fs";
+// import http from "http";
+import https from "https";
 import dotenv from "dotenv";
-import exprees from "express";
+import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import morgan from "morgan";
@@ -11,7 +14,20 @@ import Call from "./models/call";
 // Routes
 import { authRoutes, callRoutes } from "./routes";
 
-const app = exprees();
+const app = express();
+
+const privateKey = fs.readFileSync("./localhost-privkey.pem", "utf8");
+const certificate = fs.readFileSync("./localhost-cert.pem", "utf8");
+const credentials = { key: privateKey, cert: certificate };
+
+// const httpServer = http.createServer(app);
+const httpsServer = https.createServer(credentials, app);
+const httpsPort = 8443;
+
+// httpServer.listen(8080);
+httpsServer.listen(httpsPort, () => {
+  console.log(`HTTPS Server listen at https://localhost:${httpsPort}`);
+});
 
 dotenv.config();
 
@@ -26,6 +42,8 @@ app.all("/*", function(req, res, next) {
   res.header("Access-Control-Allow-Headers", "Content-Type,Accept");
   next();
 });
+
+app.use("/static", express.static("build"));
 
 app.use(
   session({
