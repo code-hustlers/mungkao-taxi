@@ -14,7 +14,7 @@ const AppRouter = ({
     <StoreConsumer>
       {({ state: { isSignin } }) => {
         return (
-          <Router>
+          <Router basename={process.env.PUBLIC_URL}>
             <>
               <GNB isSignin={isSignin} setSignin={setSignin} />
               <Route
