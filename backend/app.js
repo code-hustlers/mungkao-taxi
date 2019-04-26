@@ -17,19 +17,6 @@ import { authRoutes, callRoutes } from "./routes";
 
 const app = express();
 
-const privateKey = fs.readFileSync("./localhost-privkey.pem", "utf8");
-const certificate = fs.readFileSync("./localhost-cert.pem", "utf8");
-const credentials = { key: privateKey, cert: certificate };
-
-// const httpServer = http.createServer(app);
-const httpsServer = https.createServer(credentials, app);
-// const httpPort = 8080;
-const httpsPort = 8443;
-
-httpsServer.listen(httpsPort, () => {
-  console.log(`HTTPS Server listen at https://localhost:${httpsPort}`);
-});
-
 // HTTPS로 리다이렉팅 하는 코드
 // app.get("*", (req, res) => {
 //   res.redirect(`https://${req.headers.host}${req.url}`);
@@ -63,7 +50,7 @@ app.use(
 
 app.set("jwt-secret", "MuNgkaO");
 
-const port = process.env.PORT || 8081;
+const port = process.env.PORT || httpsPort;
 
 const { DB_ID, DB_PW, DB_NAME, DB_URL } = process.env;
 console.log(
@@ -115,6 +102,19 @@ authRoutes(app, jwt, User);
 callRoutes(app, User, Call);
 require("./routes/push")(app);
 
+const privateKey = fs.readFileSync("./localhost-privkey.pem", "utf8");
+const certificate = fs.readFileSync("./localhost-cert.pem", "utf8");
+const credentials = { key: privateKey, cert: certificate };
+
+// const httpServer = http.createServer(app);
+const httpsServer = https.createServer(credentials, app);
+// const httpPort = 8080;
+const httpsPort = 443;
+
 app.listen(port, () => {
   console.log("Express server start " + port);
+});
+
+httpsServer.listen(httpsPort, () => {
+  console.log(`HTTPS Server listen at https://localhost:${httpsPort}`);
 });
