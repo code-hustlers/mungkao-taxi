@@ -142,7 +142,9 @@ const Drive = props => {
       ) : (
         <div>
           <Title>당신이 요청받은 콜 리스트 입니다:D</Title>
-          <Slider {...settings}>{callElem}</Slider>
+          {/* <Slider {...settings}> */}
+          {callElem}
+          {/* </Slider> */}
           <Span>
             아래로 스와이프 하세요. <DownIcon />
           </Span>
