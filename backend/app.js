@@ -112,9 +112,9 @@ const httpsServer = https.createServer(options, app);
 // const httpPort = 8080;
 const httpsPort = 443;
 
-app.listen(port, () => {
-  console.log("Express server start " + port);
-});
+// app.listen(port, () => {
+//   console.log("Express server start " + port);
+// });
 
 httpsServer.listen(httpsPort, () => {
   console.log(`HTTPS Server listen at https://localhost:${httpsPort}`);
