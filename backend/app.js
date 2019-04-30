@@ -1,5 +1,4 @@
 import fs from "fs";
-// import http from "http";
 import https from "https";
 import dotenv from "dotenv";
 import express from "express";
@@ -49,8 +48,6 @@ app.use(
 );
 
 app.set("jwt-secret", "MuNgkaO");
-
-const port = process.env.PORT || httpsPort;
 
 const { DB_ID, DB_PW, DB_NAME, DB_URL } = process.env;
 console.log(
@@ -107,14 +104,13 @@ const key = fs.readFileSync("./private.key", "utf8");
 const cert = fs.readFileSync("./certificate.crt", "utf8");
 const options = { ca, key, cert };
 
-// const httpServer = http.createServer(app);
 const httpsServer = https.createServer(options, app);
-// const httpPort = 8080;
-const httpsPort = 443;
+const httpPort = process.env.HTTP_PORT;
+const httpsPort = process.env.HTTPS_PORT;
 
-// app.listen(port, () => {
-//   console.log("Express server start " + port);
-// });
+app.listen(httpPort, () => {
+  console.log(`HTTP Server listen at http://localhost:${httpPort}`);
+});
 
 httpsServer.listen(httpsPort, () => {
   console.log(`HTTPS Server listen at https://localhost:${httpsPort}`);
