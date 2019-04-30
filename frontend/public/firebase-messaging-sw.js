@@ -39,6 +39,22 @@ messaging.setBackgroundMessageHandler(function(payload) {
   );
 });
 
+messaging.onMessage(function(payload) {
+  var notificationTitle = "Background Message Title";
+  var notificationOptions = {
+    body: "Background Message body.",
+    icon: "/firebase-logo.png"
+  };
+
+  return self.registration.showNotification(
+    notificationTitle,
+    notificationOptions
+  );
+  // console.log("Message received. ", payload);
+  // const { title, body } = payload.notification;
+  // // ...
+  // new Notification(title, { body, icon: "/mungkao-taxi-logo.png" });
+});
 // Push Noti
 // self.addEventListener("push", function(event) {
 //   console.log("[Service Worker] Push Received.");
