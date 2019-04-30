@@ -102,12 +102,13 @@ authRoutes(app, jwt, User);
 callRoutes(app, User, Call);
 require("./routes/push")(app);
 
-const privateKey = fs.readFileSync("./localhost-privkey.pem", "utf8");
-const certificate = fs.readFileSync("./localhost-cert.pem", "utf8");
-const credentials = { key: privateKey, cert: certificate };
+const ca = fs.readFileSync("./ca_bundle.crt", "utf8");
+const key = fs.readFileSync("./private.key", "utf8");
+const cert = fs.readFileSync("./certificate.crt", "utf8");
+const options = { ca, key, cert };
 
 // const httpServer = http.createServer(app);
-const httpsServer = https.createServer(credentials, app);
+const httpsServer = https.createServer(options, app);
 // const httpPort = 8080;
 const httpsPort = 443;
 
