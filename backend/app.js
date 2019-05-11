@@ -39,6 +39,10 @@ app.all("/*", function(req, res, next) {
 // app.use("/static", express.static("build"));
 app.use(express.static(path.join(__dirname, "../frontend/build")));
 
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "../frontend/build/index.html"));
+});
+
 app.use(
   session({
     secret: "MuNgkaOSessIOn",
