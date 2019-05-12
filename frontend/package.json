@@ -27,7 +27,7 @@
     "watch": "npm-watch"
   },
   "watch": {
-    "build": "src/"
+    "build": "frontend/src/"
   },
   "eslintConfig": {
     "extends": "react-app"
